@@ -19,7 +19,7 @@ export default class Animations {
             }
         }
         this.activeName = "Idle";
-        this.actions[this.activeName].play();
+       // this.actions[this.activeName].play();
     }
 
     fadeToAction(name, duration) {

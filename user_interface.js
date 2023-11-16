@@ -80,13 +80,13 @@ export default class UserInteraction {
             createEmoteCallback(animations, animations.emotes[i]);
         }
 
-        // Create the expressions folder and add expressions
+       /* // Create the expressions folder and add expressions
         const expressionsFolder = characterFolder.addFolder("Expressions");
         const face = object.getObjectByName("Head_4");
         const expressions = Object.keys(face.morphTargetDictionary);
         for (let i = 0; i < expressions.length; i++) {
             expressionsFolder.add(face.morphTargetInfluences, i, 0.0, 1.0, 0.01).name(expressions[i]);
-        }
+        }*/
     }
 
     setVisibility(visible) {

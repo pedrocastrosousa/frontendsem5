@@ -53,7 +53,7 @@ export default class Player {
         for (const [key, value] of Object.entries(parameters)) {
             this[key] = value;
         }
-        this.initialDirection = THREE.MathUtils.degToRad(this.initialDirection);
+        this.initialDirection = THREE.MathUtils.degToRad(180);
         this.keyStates = { fixedView: false, firstPersonView: false, thirdPersonView: false, topView: false, viewMode: false, miniMap: false, statistics: false, userInterface: false, help: false, run: false, left: false, right: false, backward: false, forward: false, jump: false, yes: false, no: false, wave: false, punch: false, thumbsUp: false };
         this.loaded = false;
 
