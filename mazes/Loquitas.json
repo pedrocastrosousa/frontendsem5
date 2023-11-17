@@ -146,9 +146,8 @@
     ],
     "elevadores": {
         "numeroIdentificativo": "",
-        "posicaoX": 22,
-        "posicaoY": 2,
-        "direcao": "Norte"
+        "posicao": [0.5,21],
+        "direcao": 0.0
     },
     "passagem":[ {
         "piso1": "EdifA-piso2",
@@ -160,7 +159,7 @@
     }],
 
 
-    "initialPosition": [7, 6],
+    "initialPosition": [3, 21],
     "initialDirection": 0.0,
     "exitLocation": [-0.5, 6]
 

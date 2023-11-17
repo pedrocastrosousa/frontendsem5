@@ -13,7 +13,7 @@
 import * as THREE from "three";
 import Stats from "three/addons/libs/stats.module.js";
 import Orientation from "./orientation.js";
-import { generalData, mazeData, playerData, lightsData, fogData, cameraData } from "./default_data.js";
+import { generalData, mazeData, playerData, lightsData, fogData, cameraData , elevatorData} from "./default_data.js";
 import { merge } from "./merge.js";
 import Maze from "./maze.js";
 import Player from "./player.js";
@@ -22,7 +22,7 @@ import Fog from "./fog.js";
 import Camera from "./camera.js";
 import Animations from "./animations.js";
 import UserInterface from "./user_interface.js";
-
+import Elevator from "./elevator.js";
 /*
  * generalParameters = {
  *  setDevicePixelRatio: Boolean
@@ -150,7 +150,7 @@ import UserInterface from "./user_interface.js";
  */
 
 export default class ThumbRaiser {
-    constructor(generalParameters, mazeParameters, playerParameters, lightsParameters, fogParameters, fixedViewCameraParameters, firstPersonViewCameraParameters, thirdPersonViewCameraParameters, topViewCameraParameters, miniMapCameraParameters) {
+    constructor(generalParameters, mazeParameters, playerParameters, lightsParameters, fogParameters, fixedViewCameraParameters, firstPersonViewCameraParameters, thirdPersonViewCameraParameters, topViewCameraParameters, miniMapCameraParameters, elevatorParameters) {
         this.generalParameters = merge({}, generalData, generalParameters);
         this.mazeParameters = merge({}, mazeData, mazeParameters);
         this.playerParameters = merge({}, playerData, playerParameters);
@@ -161,7 +161,7 @@ export default class ThumbRaiser {
         this.thirdPersonViewCameraParameters = merge({}, cameraData, thirdPersonViewCameraParameters);
         this.topViewCameraParameters = merge({}, cameraData, topViewCameraParameters);
         this.miniMapCameraParameters = merge({}, cameraData, miniMapCameraParameters);
-
+        this.elevatorParameters = merge({}, elevatorData, elevatorParameters);
         // Create a 2D scene (the viewports frames)
         this.scene2D = new THREE.Scene();
 
@@ -183,6 +183,9 @@ export default class ThumbRaiser {
 
         // Create the player
         this.player = new Player(this.playerParameters);
+
+         // Create the elevator
+         this.elevator = new Elevator(this.elevatorParameters);
 
         // Create the lights
         this.lights = new Lights(this.lightsParameters);
@@ -652,11 +655,12 @@ export default class ThumbRaiser {
 
     update() {
         if (!this.gameRunning) {
-            if (this.maze.loaded && this.player.loaded) { // If all resources have been loaded
+            if (this.maze.loaded && this.player.loaded && this.elevator.loaded) { // If all resources have been loaded
                 // Add the maze, the player and the lights to the scene
                 this.scene3D.add(this.maze.object);
                 this.scene3D.add(this.player.object);
                 this.scene3D.add(this.lights.object);
+                this.scene3D.add(this.elevator.object);
 
                 // Create the clock
                 this.clock = new THREE.Clock();
@@ -666,10 +670,15 @@ export default class ThumbRaiser {
 
                 // Set the player's position and direction
                 this.player.position = this.maze.initialPosition.clone();
+                console.log(this.player.position);
                 this.player.direction = this.maze.initialDirection;
+                
+                this.elevator.position = this.maze.elevatorPosition.clone();
+                console.log(this.elevator.position);
+                this.elevator.direction = this.maze.elevatorDirection;
 
                 // Create the user interface
-                this.userInterface = new UserInterface(this.scene3D, this.renderer, this.lights, this.fog, this.player.object, this.animations);
+                this.userInterface = new UserInterface(this.scene3D, this.renderer, this.lights, this.fog, this.player.object, this.animations, this.elevator.object);
 
                 // Start the game
                 this.gameRunning = true;
@@ -687,6 +696,7 @@ export default class ThumbRaiser {
                     this.finalSequence();
                 }
                 else {
+                    this.elevator.object.position.set(this.elevator.position.x, this.elevator.position.y, this.elevator.position.z);
                     let coveredDistance = this.player.walkingSpeed * deltaT;
                     let directionIncrement = this.player.turningSpeed * deltaT;
                     if (this.player.keyStates.run) {
@@ -702,6 +712,7 @@ export default class ThumbRaiser {
                     const direction = THREE.MathUtils.degToRad(this.player.direction);
                     if (this.player.keyStates.backward) {
                         const newPosition = new THREE.Vector3(-coveredDistance * Math.sin(direction), 0.0, -coveredDistance * Math.cos(direction)).add(this.player.position);
+                        
                         if (this.collision(newPosition)) {
                             this.animations.fadeToAction("Death", 0.2);
                         }
@@ -715,6 +726,10 @@ export default class ThumbRaiser {
                         if (this.collision(newPosition)) {
                             this.animations.fadeToAction("Death", 0.2);
                         }
+                        // else if(this.collision(elevatorPosition)){
+                        //     this.animations2.fadeToAction("E02_open", 0.2);
+
+                        // }
                         else {
                             this.animations.fadeToAction(this.player.keyStates.run ? "Running" : "Walking", 0.2);
                             this.player.position = newPosition;
@@ -743,7 +758,9 @@ export default class ThumbRaiser {
                     }
                     this.player.object.position.set(this.player.position.x, this.player.position.y, this.player.position.z);
                     this.player.object.rotation.y = direction - this.player.initialDirection;
+                    
                 }
+              
             }
 
             // Update first-person, third-person and top view cameras parameters (player direction and target)
@@ -754,7 +771,7 @@ export default class ThumbRaiser {
             this.firstPersonViewCamera.setTarget(target);
             this.thirdPersonViewCamera.setTarget(target);
             this.topViewCamera.setTarget(target);
-
+            
             // Update statistics
             this.statistics.update();
 

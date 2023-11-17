@@ -2,6 +2,8 @@ import * as THREE from "three";
 import Ground from "./ground.js";
 import Wall from "./wall.js";
 import Door from "./door.js";
+import Elevator from "./elevator.js";
+import { elevatorData } from "./default_data.js";
 
 /*
  * parameters = {
@@ -38,13 +40,12 @@ export default class Maze {
             // Create a door
             this.door = new Door({ textureUrl: description.doorTextureUrl });
 
-            // Create a elevator
-            this.elevator = new Door({ textureUrl: description.elevatorTextureUrl });
+            this.elevatorPosition = this.cellToCartesian(description.elevadores.posicao); 
+            this.elevatorDirection = description.elevadores.direcao;
 
             // Build the maze
             let wallObject;
             let doorObject;
-            let elevatorObject;
             for (let i = 0; i <= description.tamanho.comprimento; i++) { // In order to represent the eastmost walls, the map comprimento is one column greater than the actual maze comprimento
                 for (let j = 0; j <= description.tamanho.largura; j++) { // In order to represent the southmost walls, the map largura is one row greater than the actual maze largura
                     /*
@@ -100,16 +101,18 @@ export default class Maze {
                     
                     //adição de elevadpr virado a norte
                     if (description.map[j][i] == 9 || description.map[j][i] == 11) {
-                        elevatorObject = this.elevator.object.clone();
-                        elevatorObject.position.set(i - description.tamanho.comprimento / 2.0 + 0.5, 0.5, j - description.tamanho.largura / 2.0);
-                        this.object.add(elevatorObject);
+                     //  elevatorObject = this.elevator.object.clone();
+                      //  elevatorObject.cellToCartesian(i - description.tamanho.comprimento / 2.0 + 0.5, j - description.tamanho.largura / 2.0);
+                      //  this.object.add(elevatorObject);
+                      // Adicione a instância do elevador ao array
                     }
                     //adição de elevador virado a oeste
                     if (description.map[j][i] == 8 || description.map[j][i] == 10) {
-                        elevatorObject = this.elevator.object.clone();
-                        elevatorObject.rotateY(Math.PI / 2.0);
-                        elevatorObject.position.set(i - description.tamanho.comprimento / 2.0, 0.5, j - description.tamanho.largura / 2.0 + 0.5);
-                        this.object.add(elevatorObject);
+                      
+                       // elevatorObject = this.elevator.object.clone();
+                       // elevatorObject.rotateY(Math.PI / 2.0);
+                       // elevatorObject.position.set(i - description.tamanho.comprimento / 2.0, 0.5, j - description.tamanho.largura / 2.0 + 0.5);
+                       // this.object.add(elevatorObject);
                     }
                 }
             }

@@ -23,6 +23,14 @@ export const playerData = {
     keyCodes: { fixedView: "Digit1", firstPersonView: "Digit2", thirdPersonView: "Digit3", topView: "Digit4", viewMode: "KeyV", userInterface: "KeyU", miniMap: "KeyM", help: "KeyH", statistics: "KeyS", run: "KeyR", left: "ArrowLeft", right: "ArrowRight", backward: "ArrowDown", forward: "ArrowUp", jump: "KeyJ", yes: "KeyY", no: "KeyN", wave: "KeyW", punch: "KeyP", thumbsUp: "KeyT" }
 }
 
+export const elevatorData = {
+    url:"./models/Elevator/elevator_animated.glb" ,
+    credits: "Model and related code snippets created by <a href='https://www.patreon.com/quaternius' target='_blank' rel='noopener'>Tomás Laulhé</a>. CC0 1.0. Modified by <a href='https://donmccurdy.com/' target='_blank' rel='noopener'>Don McCurdy</a>.",
+    scale: new THREE.Vector3(0.25, 0.25, 0.50),
+    initialDirection: 0.0, // Expressed in degrees
+    }
+
+
 export const lightsData = {
     ambientLight: { color: 0xffffff, intensity: 1.0 },
     pointLight1: { color: 0xffffff, intensity: 1.0, distance: 0.0, position: new THREE.Vector3(0.0, 0.0, 0.0) },
