@@ -38,11 +38,26 @@ export default class Maze {
             this.wall = new Wall({ textureUrl: description.wallTextureUrl });
 
             // Create a door
-            this.door = new Door({ textureUrl: description.doorTextureUrl });
+           // this.door = new Door({ textureUrl: description.doorTextureUrl });
 
+            // Store the elevator's initial position and direction
             this.elevatorPosition = this.cellToCartesian(description.elevadores.posicao); 
             this.elevatorDirection = description.elevadores.direcao;
 
+            // Store the door's initial position and direction
+
+            this.doorPositionsList = [];
+            this.doorDirectionsList = [];
+        this.doorList = description.salas;
+        console.log('numero de salas:'+description.salas.length);
+            for (let i = 0; i < description.salas.length; i++) {
+                this.doorPosition = this.cellToCartesian(description.salas[i].porta.posicao);
+                this.doorDirection = description.salas[i].porta.posicao;
+    
+               // this.doorPositionsList.push(doorPosition);
+               // this.doorDirectionsList.push(doorDirection);
+            }
+ 
             // Build the maze
             let wallObject;
             let doorObject;
@@ -74,47 +89,47 @@ export default class Maze {
                     //adição de parede virada a norte
                     if (description.map[j][i] == 2 || description.map[j][i] == 3 || description.map[j][i] == 6 || description.map[j][i] == 10) {
                         wallObject = this.wall.object.clone();
-                        wallObject.position.set(i - description.tamanho.comprimento / 2.0 + 0.5, 0.5, j - description.tamanho.largura / 2.0);
+                        wallObject.position.set(i - description.tamanho.comprimento / 2.0 + 0.5, 1, j - description.tamanho.largura / 2.0);
                         this.object.add(wallObject);
                     }
                     //adição de parede virada a oeste 
                     if (description.map[j][i] == 1 || description.map[j][i] == 3 || description.map[j][i] == 7 || description.map[j][i] == 11) {
                         wallObject = this.wall.object.clone();
                         wallObject.rotateY(Math.PI / 2.0);
-                        wallObject.position.set(i - description.tamanho.comprimento / 2.0, 0.5, j - description.tamanho.largura / 2.0 + 0.5);
+                        wallObject.position.set(i - description.tamanho.comprimento / 2.0, 1, j - description.tamanho.largura / 2.0 + 0.5);
                         this.object.add(wallObject);
                     }
 
-                    //adição de porta virada a norte
-                    if (description.map[j][i] == 5 || description.map[j][i] == 7) {
-                        doorObject = this.door.object.clone();
-                        doorObject.position.set(i - description.tamanho.comprimento / 2.0 + 0.5, 0.5, j - description.tamanho.largura / 2.0);
-                        this.object.add(doorObject);
-                    }
-                    //adição de porta virada a oeste
-                    if (description.map[j][i] == 4 || description.map[j][i] == 6) {
-                        doorObject = this.door.object.clone();
-                        doorObject.rotateY(Math.PI / 2.0);
-                        doorObject.position.set(i - description.tamanho.comprimento / 2.0, 0.5, j - description.tamanho.largura / 2.0 + 0.5);
-                        this.object.add(doorObject);
-                    }
+                //     //adição de porta virada a norte
+                //     if (description.map[j][i] == 5 || description.map[j][i] == 7) {
+                //         doorObject = this.door.object.clone();
+                //         doorObject.position.set(i - description.tamanho.comprimento / 2.0 + 0.5, 0.5, j - description.tamanho.largura / 2.0);
+                //         this.object.add(doorObject);
+                //     }
+                //     //adição de porta virada a oeste
+                //     if (description.map[j][i] == 4 || description.map[j][i] == 6) {
+                //         doorObject = this.door.object.clone();
+                //         doorObject.rotateY(Math.PI / 2.0);
+                //         doorObject.position.set(i - description.tamanho.comprimento / 2.0, 0.5, j - description.tamanho.largura / 2.0 + 0.5);
+                //         this.object.add(doorObject);
+                //     }
                     
-                    //adição de elevadpr virado a norte
-                    if (description.map[j][i] == 9 || description.map[j][i] == 11) {
-                     //  elevatorObject = this.elevator.object.clone();
-                      //  elevatorObject.cellToCartesian(i - description.tamanho.comprimento / 2.0 + 0.5, j - description.tamanho.largura / 2.0);
-                      //  this.object.add(elevatorObject);
-                      // Adicione a instância do elevador ao array
-                    }
-                    //adição de elevador virado a oeste
-                    if (description.map[j][i] == 8 || description.map[j][i] == 10) {
+                //     //adição de elevadpr virado a norte
+                //     if (description.map[j][i] == 9 || description.map[j][i] == 11) {
+                //      //  elevatorObject = this.elevator.object.clone();
+                //       //  elevatorObject.cellToCartesian(i - description.tamanho.comprimento / 2.0 + 0.5, j - description.tamanho.largura / 2.0);
+                //       //  this.object.add(elevatorObject);
+                //       // Adicione a instância do elevador ao array
+                //     }
+                //     //adição de elevador virado a oeste
+                //     if (description.map[j][i] == 8 || description.map[j][i] == 10) {
                       
-                       // elevatorObject = this.elevator.object.clone();
-                       // elevatorObject.rotateY(Math.PI / 2.0);
-                       // elevatorObject.position.set(i - description.tamanho.comprimento / 2.0, 0.5, j - description.tamanho.largura / 2.0 + 0.5);
-                       // this.object.add(elevatorObject);
-                    }
-                }
+                //        // elevatorObject = this.elevator.object.clone();
+                //        // elevatorObject.rotateY(Math.PI / 2.0);
+                //        // elevatorObject.position.set(i - description.tamanho.comprimento / 2.0, 0.5, j - description.tamanho.largura / 2.0 + 0.5);
+                //        // this.object.add(elevatorObject);
+                //     }
+             }
             }
 
             this.object.scale.set(this.scale.x, this.scale.y, this.scale.z);

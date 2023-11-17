@@ -13,7 +13,7 @@
 import * as THREE from "three";
 import Stats from "three/addons/libs/stats.module.js";
 import Orientation from "./orientation.js";
-import { generalData, mazeData, playerData, lightsData, fogData, cameraData , elevatorData} from "./default_data.js";
+import { generalData, mazeData, playerData, lightsData, fogData, cameraData , elevatorData, doorData} from "./default_data.js";
 import { merge } from "./merge.js";
 import Maze from "./maze.js";
 import Player from "./player.js";
@@ -23,6 +23,7 @@ import Camera from "./camera.js";
 import Animations from "./animations.js";
 import UserInterface from "./user_interface.js";
 import Elevator from "./elevator.js";
+import Door from "./door.js";
 /*
  * generalParameters = {
  *  setDevicePixelRatio: Boolean
@@ -150,7 +151,7 @@ import Elevator from "./elevator.js";
  */
 
 export default class ThumbRaiser {
-    constructor(generalParameters, mazeParameters, playerParameters, lightsParameters, fogParameters, fixedViewCameraParameters, firstPersonViewCameraParameters, thirdPersonViewCameraParameters, topViewCameraParameters, miniMapCameraParameters, elevatorParameters) {
+    constructor(generalParameters, mazeParameters, playerParameters, lightsParameters, fogParameters, fixedViewCameraParameters, firstPersonViewCameraParameters, thirdPersonViewCameraParameters, topViewCameraParameters, miniMapCameraParameters, elevatorParameters, doorParameters) {
         this.generalParameters = merge({}, generalData, generalParameters);
         this.mazeParameters = merge({}, mazeData, mazeParameters);
         this.playerParameters = merge({}, playerData, playerParameters);
@@ -162,6 +163,8 @@ export default class ThumbRaiser {
         this.topViewCameraParameters = merge({}, cameraData, topViewCameraParameters);
         this.miniMapCameraParameters = merge({}, cameraData, miniMapCameraParameters);
         this.elevatorParameters = merge({}, elevatorData, elevatorParameters);
+        this.doorParameters = merge({},doorData, doorParameters);
+
         // Create a 2D scene (the viewports frames)
         this.scene2D = new THREE.Scene();
 
@@ -184,8 +187,22 @@ export default class ThumbRaiser {
         // Create the player
         this.player = new Player(this.playerParameters);
 
-         // Create the elevator
-         this.elevator = new Elevator(this.elevatorParameters);
+        // Create the elevator
+        this.elevator = new Elevator(this.elevatorParameters);
+
+        // Create the door
+        
+      // this.door = new Door(this.doorParameters);
+    // Criar várias portas
+   // const numPortas = 2; //numero de portas criadas harcoded
+        this.doors = [];
+    // Criar múltiplas instâncias de portas
+console.log('lista de portas '+ this.maze.doorList);
+
+    for (let i = 0; i < 4; i++) {
+        const door = new Door(this.doorParameters);
+        this.doors.push(door);
+    }
 
         // Create the lights
         this.lights = new Lights(this.lightsParameters);
@@ -653,14 +670,20 @@ export default class ThumbRaiser {
         return this.maze.distanceToWestWall(position) < this.player.radius || this.maze.distanceToEastWall(position) < this.player.radius || this.maze.distanceToNorthWall(position) < this.player.radius || this.maze.distanceToSouthWall(position) < this.player.radius;
     }
 
+
     update() {
         if (!this.gameRunning) {
-            if (this.maze.loaded && this.player.loaded && this.elevator.loaded) { // If all resources have been loaded
-                // Add the maze, the player and the lights to the scene
+            if (this.maze.loaded && this.player.loaded && this.elevator.loaded &&  this.doors[0].loaded && this.doors[1].loaded) { // If all resources have been loaded
+                // Add the maze, the player, the lights, the elevator and the doors to the scene
                 this.scene3D.add(this.maze.object);
                 this.scene3D.add(this.player.object);
                 this.scene3D.add(this.lights.object);
                 this.scene3D.add(this.elevator.object);
+            
+              //  this.scene3D.add(this.door.object);
+              this.doors.forEach((door) => {
+                this.scene3D.add(door.object);
+            });
 
                 // Create the clock
                 this.clock = new THREE.Clock();
@@ -670,13 +693,17 @@ export default class ThumbRaiser {
 
                 // Set the player's position and direction
                 this.player.position = this.maze.initialPosition.clone();
-                console.log(this.player.position);
                 this.player.direction = this.maze.initialDirection;
                 
+                // Set the elevators's position and direction
                 this.elevator.position = this.maze.elevatorPosition.clone();
-                console.log(this.elevator.position);
                 this.elevator.direction = this.maze.elevatorDirection;
 
+                // Set the door's position and direction
+                // this.door.position = this.maze.doorPosition.clone();
+                 //this.door.direction = this.maze.doorDirection;
+               
+              
                 // Create the user interface
                 this.userInterface = new UserInterface(this.scene3D, this.renderer, this.lights, this.fog, this.player.object, this.animations, this.elevator.object);
 
@@ -696,7 +723,12 @@ export default class ThumbRaiser {
                     this.finalSequence();
                 }
                 else {
+                    // set elevator position
                     this.elevator.object.position.set(this.elevator.position.x, this.elevator.position.y, this.elevator.position.z);
+                   // set door position
+                  // this.door.object.position.set(this.door.position.x, this.door.position.y, this.door.position.z);
+
+
                     let coveredDistance = this.player.walkingSpeed * deltaT;
                     let directionIncrement = this.player.turningSpeed * deltaT;
                     if (this.player.keyStates.run) {
@@ -710,6 +742,10 @@ export default class ThumbRaiser {
                         this.player.direction -= directionIncrement;
                     }
                     const direction = THREE.MathUtils.degToRad(this.player.direction);
+
+                    if(this.maze.elevatorPosition == this.player.radius){
+                        this.animations.fadeToAction("E02_open", 0.2);
+                    }
                     if (this.player.keyStates.backward) {
                         const newPosition = new THREE.Vector3(-coveredDistance * Math.sin(direction), 0.0, -coveredDistance * Math.cos(direction)).add(this.player.position);
                         
@@ -723,6 +759,7 @@ export default class ThumbRaiser {
                     }
                     else if (this.player.keyStates.forward) {
                         const newPosition = new THREE.Vector3(coveredDistance * Math.sin(direction), 0.0, coveredDistance * Math.cos(direction)).add(this.player.position);
+                        
                         if (this.collision(newPosition)) {
                             this.animations.fadeToAction("Death", 0.2);
                         }
@@ -759,6 +796,9 @@ export default class ThumbRaiser {
                     this.player.object.position.set(this.player.position.x, this.player.position.y, this.player.position.z);
                     this.player.object.rotation.y = direction - this.player.initialDirection;
                     
+                    this.doors.forEach((door, index) => {
+                        door.object.position.set(index + 0.5, 0, index + 0.5);
+                    });
                 }
               
             }
@@ -771,7 +811,7 @@ export default class ThumbRaiser {
             this.firstPersonViewCamera.setTarget(target);
             this.thirdPersonViewCamera.setTarget(target);
             this.topViewCamera.setTarget(target);
-            
+
             // Update statistics
             this.statistics.update();
 
@@ -804,6 +844,9 @@ export default class ThumbRaiser {
             if (this.miniMapCheckBox.checked) {
                 this.scene3D.fog = null;
                 this.player.object.visible = true;
+                this.elevator.object.visible = true;
+               
+               
                 const viewport = this.miniMapCamera.getViewport();
                 this.renderer.setViewport(viewport.x, viewport.y, viewport.width, viewport.height);
                 this.renderer.render(this.scene3D, this.miniMapCamera.object);

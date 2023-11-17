@@ -2,9 +2,9 @@ import * as THREE from "three";
 
 export default class Animations {
     constructor(object, animations) {
-        this.states = ["Idle", "Walking", "Running", "Dance", "Death", "Sitting", "Standing"];
-        this.emotes = ["Jump", "Yes", "No", "Wave", "Punch", "ThumbsUp"];
-
+    this.states = ["Idle", "Walking", "Running", "Dance", "Death", "Sitting", "Standing"];
+    this.emotes = ["Jump", "Yes", "No", "Wave", "Punch", "ThumbsUp"];
+        this.states = ["E02_open"]
         this.mixer = new THREE.AnimationMixer(object);
         this.actionInProgress = false;
 
@@ -13,14 +13,17 @@ export default class Animations {
             const clip = animations[i];
             const action = this.mixer.clipAction(clip);
             this.actions[clip.name] = action;
-            if (this.states.indexOf(clip.name) >= 4 || this.emotes.indexOf(clip.name) >= 0) {
+            if (this.states.indexOf(clip.name) >= 4 ) {
                 action.clampWhenFinished = true;
                 action.loop = THREE.LoopOnce;
             }
-        }
+       }
         this.activeName = "Idle";
-       // this.actions[this.activeName].play();
+        //this.actions[this.activeName].play();
     }
+
+
+
 
     fadeToAction(name, duration) {
         if (this.activeName != name && !this.actionInProgress) {

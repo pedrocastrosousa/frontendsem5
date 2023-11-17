@@ -18,7 +18,7 @@ export default class Elevator {
     constructor(parameters) {
         this.onLoad = function (description) {
             this.object = description.scene;
-            this.animations = description.animations;
+            this.animationsElevator = description.animations;
 
            
             // Get the object's axis-aligned bounding box (AABB) in 3D space
