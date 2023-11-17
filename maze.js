@@ -192,6 +192,14 @@ export default class Maze {
         return Infinity;
     }
 
+    distanceToElevator(position) {
+        const indices = this.cartesianToCell(position);
+        if (this.map[indices[0]][indices[1]] == 8 || this.map[indices[0]][indices[1]] == 9 || this.map[indices[0]][indices[1]] == 10|| this.map[indices[0]][indices[1]] == 11) {
+            return position.x - this.cellToCartesian(indices).x + this.scale.x / 2.0;
+        }
+        return Infinity;
+    }
+    
     distanceToEastWall(position) {
         const indices = this.cartesianToCell(position);
         indices[1]++;

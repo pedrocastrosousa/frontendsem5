@@ -151,7 +151,7 @@
 
 
     "initialPosition": [3, 21],
-    "initialDirection": 0.0,
+    "initialDirection": 180.0,
     "exitLocation": [-0.5, 6]
 
 }

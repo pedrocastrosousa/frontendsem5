@@ -3,24 +3,20 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
 /*
  * parameters = {
- *  url: String,
- *  credits: String,
- *  scale: Vector3,
- *  walkingSpeed: Float,
- *  initialDirection: Float,
- *  turningSpeed: Float,
- *  runningFactor: Float,
- *  keyCodes: { fixedView: String, firstPersonView: String, thirdPersonView: String, topView: String, viewMode: String, userInterface: String, miniMap: String, help: String, statistics: String, run: String, left: String, right: String, backward: String, forward: String, jump: String, yes: String, no: String, wave: String, punch: String, thumbsUp: String }
- * }
+ *   url: "./models/Elevator/elevator_animated.glb",
+ *  credits: "Model and related code snippets created by <a href='https://www.patreon.com/quaternius' target='_blank' rel='noopener'>Tomás Laulhé</a>. CC0 1.0. Modified by <a href='https://donmccurdy.com/' target='_blank' rel='noopener'>Don McCurdy</a>.",
+ *  scale: new THREE.Vector3(0.25, 0.25, 0.50),
+ *  initialDirection: 0.0, // Expressed in degrees
+ *  keyCodes: { open: "KeyE" }
  */
 
 export default class Elevator {
     constructor(parameters) {
         this.onLoad = function (description) {
             this.object = description.scene;
-            this.animationsElevator = description.animations;
+            this.animations = description.animations;
 
-           
+
             // Get the object's axis-aligned bounding box (AABB) in 3D space
             const box = new THREE.Box3();
             box.setFromObject(this.object); // This function may result in a larger box than strictly necessary: https://threejs.org/docs/#api/en/math/Box3.setFromObject
@@ -34,7 +30,7 @@ export default class Elevator {
             size.y = 6.0;
             size.z = 6;
 
-        
+
             this.object.scale.set(this.scale.x, this.scale.y, this.scale.z);
             this.loaded = true;
         }
@@ -46,9 +42,11 @@ export default class Elevator {
         this.onError = function (url, error) {
             console.error("Error loading resource " + url + " (" + error + ").");
         }
+
         for (const [key, value] of Object.entries(parameters)) {
             this[key] = value;
         }
+        this.keyStates = { open: false };
         this.loaded = false;
 
         // Create a resource .gltf or .glb file loader
@@ -70,5 +68,5 @@ export default class Elevator {
         );
     }
 
-  
+
 }

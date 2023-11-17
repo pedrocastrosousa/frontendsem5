@@ -24,6 +24,7 @@ import Animations from "./animations.js";
 import UserInterface from "./user_interface.js";
 import Elevator from "./elevator.js";
 import Door from "./door.js";
+import AnimationsElevator from "./animationElevator.js";
 /*
  * generalParameters = {
  *  setDevicePixelRatio: Boolean
@@ -197,7 +198,6 @@ export default class ThumbRaiser {
    // const numPortas = 2; //numero de portas criadas harcoded
         this.doors = [];
     // Criar múltiplas instâncias de portas
-console.log('lista de portas '+ this.maze.doorList);
 
     for (let i = 0; i < 4; i++) {
         const door = new Door(this.doorParameters);
@@ -487,24 +487,27 @@ console.log('lista de portas '+ this.maze.doorList);
             else if (event.code == this.player.keyCodes.forward) {
                 this.player.keyStates.forward = state;
             }
-            if (event.code == this.player.keyCodes.jump) {
-                this.player.keyStates.jump = state;
+            if (event.code == this.elevator.keyCodes.open) {
+                this.elevator.keyStates.open = state;
             }
-            else if (event.code == this.player.keyCodes.yes) {
-                this.player.keyStates.yes = state;
-            }
-            else if (event.code == this.player.keyCodes.no) {
-                this.player.keyStates.no = state;
-            }
-            else if (event.code == this.player.keyCodes.wave) {
-                this.player.keyStates.wave = state;
-            }
-            else if (event.code == this.player.keyCodes.punch) {
-                this.player.keyStates.punch = state;
-            }
-            else if (event.code == this.player.keyCodes.thumbsUp) {
-                this.player.keyStates.thumbsUp = state;
-            }
+            // if (event.code == this.player.keyCodes.jump) {
+            //     this.player.keyStates.jump = state;
+            // }
+            // else if (event.code == this.player.keyCodes.yes) {
+            //     this.player.keyStates.yes = state;
+            // }
+            // else if (event.code == this.player.keyCodes.no) {
+            //     this.player.keyStates.no = state;
+            // }
+            // else if (event.code == this.player.keyCodes.wave) {
+            //     this.player.keyStates.wave = state;
+            // }
+            // else if (event.code == this.player.keyCodes.punch) {
+            //     this.player.keyStates.punch = state;
+            // }
+            // else if (event.code == this.player.keyCodes.thumbsUp) {
+            //     this.player.keyStates.thumbsUp = state;
+            // }
         }
     }
 
@@ -663,13 +666,16 @@ console.log('lista de portas '+ this.maze.doorList);
         // Set single-view mode
         this.setViewMode(false);
         // Set the final action
-        this.animations.fadeToAction("Dance", 0.2);
+       // this.animations.fadeToAction("Dance", 0.2);
     }
 
     collision(position) {
         return this.maze.distanceToWestWall(position) < this.player.radius || this.maze.distanceToEastWall(position) < this.player.radius || this.maze.distanceToNorthWall(position) < this.player.radius || this.maze.distanceToSouthWall(position) < this.player.radius;
     }
 
+    collisionWithElevator(position) {
+        return this.maze.distanceToElevator(position) < this.player.radius ;
+    }
 
     update() {
         if (!this.gameRunning) {
@@ -690,7 +696,7 @@ console.log('lista de portas '+ this.maze.doorList);
 
                 // Create model animations (states, emotes and expressions)
                 this.animations = new Animations(this.player.object, this.player.animations);
-
+                this.animationsElevator = new AnimationsElevator(this.elevator.object, this.elevator.animations);
                 // Set the player's position and direction
                 this.player.position = this.maze.initialPosition.clone();
                 this.player.direction = this.maze.initialDirection;
@@ -715,9 +721,9 @@ console.log('lista de portas '+ this.maze.doorList);
             // Update the model animations
             const deltaT = this.clock.getDelta();
             this.animations.update(deltaT);
-
+            this.animationsElevator.update(deltaT);
             // Update the player
-            if (!this.animations.actionInProgress) {
+            if (!this.animations.actionInProgress && !this.animationsElevator.actionInProgress) {
                 // Check if the player found the exit
                 if (this.maze.foundExit(this.player.position)) {
                     this.finalSequence();
@@ -735,6 +741,7 @@ console.log('lista de portas '+ this.maze.doorList);
                         coveredDistance *= this.player.runningFactor;
                         directionIncrement *= this.player.runningFactor;
                     }
+                    
                     if (this.player.keyStates.left) {
                         this.player.direction += directionIncrement;
                     }
@@ -743,9 +750,7 @@ console.log('lista de portas '+ this.maze.doorList);
                     }
                     const direction = THREE.MathUtils.degToRad(this.player.direction);
 
-                    if(this.maze.elevatorPosition == this.player.radius){
-                        this.animations.fadeToAction("E02_open", 0.2);
-                    }
+
                     if (this.player.keyStates.backward) {
                         const newPosition = new THREE.Vector3(-coveredDistance * Math.sin(direction), 0.0, -coveredDistance * Math.cos(direction)).add(this.player.position);
                         
@@ -753,45 +758,30 @@ console.log('lista de portas '+ this.maze.doorList);
                             this.animations.fadeToAction("Death", 0.2);
                         }
                         else {
-                            this.animations.fadeToAction(this.player.keyStates.run ? "Running" : "Walking", 0.2);
+                          // this.animations.fadeToAction(this.player.keyStates.run ? "Running" : "Walking", 0.2);
                             this.player.position = newPosition;
                         }
+
+                       
                     }
                     else if (this.player.keyStates.forward) {
                         const newPosition = new THREE.Vector3(coveredDistance * Math.sin(direction), 0.0, coveredDistance * Math.cos(direction)).add(this.player.position);
                         
                         if (this.collision(newPosition)) {
                             this.animations.fadeToAction("Death", 0.2);
+                            
                         }
-                        // else if(this.collision(elevatorPosition)){
-                        //     this.animations2.fadeToAction("E02_open", 0.2);
-
-                        // }
                         else {
-                            this.animations.fadeToAction(this.player.keyStates.run ? "Running" : "Walking", 0.2);
                             this.player.position = newPosition;
                         }
+                        if (this.collisionWithElevator(newPosition)) {
+                            this.animationsElevator.fadeToAction("02_open", 0.2);
+                        }
                     }
-                    else if (this.player.keyStates.jump) {
-                        this.animations.fadeToAction("Jump", 0.2);
-                    }
-                    else if (this.player.keyStates.yes) {
-                        this.animations.fadeToAction("Yes", 0.2);
-                    }
-                    else if (this.player.keyStates.no) {
-                        this.animations.fadeToAction("No", 0.2);
-                    }
-                    else if (this.player.keyStates.wave) {
-                        this.animations.fadeToAction("Wave", 0.2);
-                    }
-                    else if (this.player.keyStates.punch) {
-                        this.animations.fadeToAction("Punch", 0.2);
-                    }
-                    else if (this.player.keyStates.thumbsUp) {
-                        this.animations.fadeToAction("ThumbsUp", 0.2);
-                    }
+                   
                     else {
-                        this.animations.fadeToAction("Idle", this.animations.activeName != "Death" ? 0.2 : 0.6);
+                        
+                        this.animations.fadeToAction("Armature|ArmatureAction", this.animations.activeName != "Death" ? 0.2 : 0.6);
                     }
                     this.player.object.position.set(this.player.position.x, this.player.position.y, this.player.position.z);
                     this.player.object.rotation.y = direction - this.player.initialDirection;

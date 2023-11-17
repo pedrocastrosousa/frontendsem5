@@ -1,8 +1,8 @@
 import * as THREE from "three";
 
-export default class Animations {
+export default class AnimationsElevator {
     constructor(object, animations) {
-    this.states = ["Armature|ArmatureAction"];
+    this.states = [ "02_open"];
     
         this.mixer = new THREE.AnimationMixer(object);
         this.actionInProgress = false;
@@ -17,14 +17,13 @@ export default class Animations {
                 action.loop = THREE.LoopOnce;
             }
        }
-        this.activeName = "Armature|ArmatureAction";
-        
+        this.activeName =  "02_open";
         this.actions[this.activeName].play();
     }
-
+ 
 
     fadeToAction(name, duration) {
-        if (this.activeName != name && !this.actionInProgress) {
+       
             const previousName = this.activeName;
             this.activeName = name;
             this.actions[previousName].fadeOut(duration);
@@ -34,12 +33,6 @@ export default class Animations {
                 .setEffectiveWeight(1)
                 .fadeIn(duration)
                 .play();
-            // Some actions must not be interrupted
-            if (this.activeName != "Armature|ArmatureAction" ) {
-                this.mixer.addEventListener("finished", event => this.actionFinished(event));
-                this.actionInProgress = true;
-            }
-        }
     }
 
     // actionFinished() {
