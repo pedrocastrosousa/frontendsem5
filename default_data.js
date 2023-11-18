@@ -13,9 +13,8 @@ export const mazeData = {
 
 export const playerData = {
     url: "./models/gltf/RobotExpressive/toy_story_robot.glb",
-    credits: "Model and related code snippets created by <a href='https://www.patreon.com/quaternius' target='_blank' rel='noopener'>Tomás Laulhé</a>. CC0 1.0. Modified by <a href='https://donmccurdy.com/' target='_blank' rel='noopener'>Don McCurdy</a>.",
     eyeHeight: 0.8, // fraction of character height
-    scale: new THREE.Vector3(0.1, 0.1, 0.1),
+    scale: new THREE.Vector3(0.2, 0.2, 0.2),
     walkingSpeed: 0.75,
     initialDirection: 0.0, // Expressed in degrees
     turningSpeed: 75.0, // Expressed in degrees / second
@@ -25,17 +24,15 @@ export const playerData = {
 
 export const elevatorData = {
     url: "./models/Elevator/elevator_animated.glb",
-    credits: "Model and related code snippets created by <a href='https://www.patreon.com/quaternius' target='_blank' rel='noopener'>Tomás Laulhé</a>. CC0 1.0. Modified by <a href='https://donmccurdy.com/' target='_blank' rel='noopener'>Don McCurdy</a>.",
-    scale: new THREE.Vector3(0.25, 0.25, 0.50),
+    scale: new THREE.Vector3(0.25, 0.5, 0.50),
     initialDirection: 0.0, // Expressed in degrees
     keyCodes: { open: "KeyE" }
 }
 
-export const doorData = {
+export const portaData = {
     url: "./models/door/door_wood.glb",
-    credits: "Model and related code snippets created by <a href='https://www.patreon.com/quaternius' target='_blank' rel='noopener'>Tomás Laulhé</a>. CC0 1.0. Modified by <a href='https://donmccurdy.com/' target='_blank' rel='noopener'>Don McCurdy</a>.",
-    scale: new THREE.Vector3(1, 1, 1),
-    initialDirection: 0.0, // Expressed in degrees
+    scale: new THREE.Vector3(0.72, 0.667, 0.72),
+    portaDirection: 0.0, // Expressed in degrees
 }
 
 

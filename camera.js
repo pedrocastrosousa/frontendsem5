@@ -34,6 +34,8 @@ export default class Camera {
 
         // The player direction (expressed in degrees) is needed to compute the horizontal orientation of the first- and third-person view cameras
         this.playerDirection = 0.0;
+        this.portaDirection = 0.0;
+        this.elevatorDirection = 0.0;
 
         // Create two cameras (perspective and orthographic projection)
         this.perspective = new THREE.PerspectiveCamera();

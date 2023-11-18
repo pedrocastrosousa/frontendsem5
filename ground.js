@@ -3,7 +3,7 @@ import * as THREE from "three";
 /*
  * parameters = {
  *  textureUrl: String,
- *  tamanho: Vector2
+ *  size: Vector2
  * }
  */
 
@@ -18,12 +18,12 @@ export default class Ground {
         texture.colorSpace = THREE.SRGBColorSpace;
         texture.wrapS = THREE.RepeatWrapping;
         texture.wrapT = THREE.RepeatWrapping;
-        texture.repeat.set(this.tamanho.comprimento, this.tamanho.largura);
+        texture.repeat.set(this.size.width, this.size.height);
         texture.magFilter = THREE.LinearFilter;
         texture.minFilter = THREE.LinearMipmapLinearFilter;
 
         // Create a ground plane that receives shadows but does not cast them
-        const geometry = new THREE.PlaneGeometry(this.tamanho.comprimento, this.tamanho.largura);
+        const geometry = new THREE.PlaneGeometry(this.size.width, this.size.height);
         const material = new THREE.MeshPhongMaterial({ color: 0xffffff, map: texture });
         this.object = new THREE.Mesh(geometry, material);
         this.object.rotateX(-Math.PI / 2.0);

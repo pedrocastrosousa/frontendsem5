@@ -1,327 +1,272 @@
-// Thumb Raiser - JPP 2021, 2022, 2023
-// 3D modeling
-// 3D models importing
-// Perspective and orthographic projections
-// Viewing
-// Linear and affine transformations
-// Lighting and materials
-// Shadow projection
-// Fog
-// Texture mapping
-// User interaction
 
 import * as THREE from "three";
 import Stats from "three/addons/libs/stats.module.js";
 import Orientation from "./orientation.js";
-import { generalData, mazeData, playerData, lightsData, fogData, cameraData , elevatorData, doorData} from "./default_data.js";
+import { generalData, mazeData, playerData, portaData, lightsData, fogData, cameraData, elevatorData } from "./default_data.js";
 import { merge } from "./merge.js";
 import Maze from "./maze.js";
 import Player from "./player.js";
 import Lights from "./lights.js";
+import Porta from "./porta.js";
 import Fog from "./fog.js";
 import Camera from "./camera.js";
 import Animations from "./animations.js";
 import UserInterface from "./user_interface.js";
 import Elevator from "./elevator.js";
-import Door from "./door.js";
 import AnimationsElevator from "./animationElevator.js";
-/*
- * generalParameters = {
- *  setDevicePixelRatio: Boolean
- * }
- *
- * mazeParameters = {
- *  url: String,
- *  credits: String,
- *  scale: Vector3
- * }
- *
- * playerParameters = {
- *  url: String,
- *  credits: String,
- *  scale: Vector3,
- *  walkingSpeed: Float,
- *  initialDirection: Float,
- *  turningSpeed: Float,
- *  runningFactor: Float,
- *  keyCodes: { fixedView: String, firstPersonView: String, thirdPersonView: String, topView: String, viewMode: String, userInterface: String, miniMap: String, help: String, statistics: String, run: String, left: String, right: String, backward: String, forward: String, jump: String, yes: String, no: String, wave: String, punch: String, thumbsUp: String }
- * }
- *
- * lightsParameters = {
- *  ambientLight: { color: Integer, intensity: Float },
- *  pointLight1: { color: Integer, intensity: Float, range: Float, position: Vector3 },
- *  pointLight2: { color: Integer, intensity: Float, range: Float, position: Vector3 },
- *  spotLight: { color: Integer, intensity: Float, range: Float, angle: Float, penumbra: Float, position: Vector3, direction: Float }
- * }
- *
- * fogParameters = {
- *  enabled: Boolean,
- *  color: Integer,
- *  near: Float,
- *  far: Float
- * }
- *
- * fixedViewCameraParameters = {
- *  view: String,
- *  multipleViewsViewport: Vector4,
- *  target: Vector3,
- *  initialOrientation: Orientation,
- *  orientationMin: Orientation,
- *  orientationMax: Orientation,
- *  initialDistance: Float,
- *  distanceMin: Float,
- *  distanceMax: Float,
- *  initialZoom: Float,
- *  zoomMin: Float,
- *  zoomMax: Float,
- *  initialFov: Float,
- *  near: Float,
- *  far: Float
- * }
- *
- * firstPersonViewCameraParameters = {
- *  view: String,
- *  multipleViewsViewport: Vector4,
- *  target: Vector3,
- *  initialOrientation: Orientation,
- *  orientationMin: Orientation,
- *  orientationMax: Orientation,
- *  initialDistance: Float,
- *  distanceMin: Float,
- *  distanceMax: Float,
- *  initialZoom: Float,
- *  zoomMin: Float,
- *  zoomMax: Float,
- *  initialFov: Float,
- *  near: Float,
- *  far: Float
- * }
- *
- * thirdPersonViewCameraParameters = {
- *  view: String,
- *  multipleViewsViewport: Vector4,
- *  target: Vector3,
- *  initialOrientation: Orientation,
- *  orientationMin: Orientation,
- *  orientationMax: Orientation,
- *  initialDistance: Float,
- *  distanceMin: Float,
- *  distanceMax: Float,
- *  initialZoom: Float,
- *  zoomMin: Float,
- *  zoomMax: Float,
- *  initialFov: Float,
- *  near: Float,
- *  far: Float
- * }
- *
- * topViewCameraParameters = {
- *  view: String,
- *  multipleViewsViewport: Vector4,
- *  target: Vector3,
- *  initialOrientation: Orientation,
- *  orientationMin: Orientation,
- *  orientationMax: Orientation,
- *  initialDistance: Float,
- *  distanceMin: Float,
- *  distanceMax: Float,
- *  initialZoom: Float,
- *  zoomMin: Float,
- *  zoomMax: Float,
- *  initialFov: Float,
- *  near: Float,
- *  far: Float
- * }
- *
- * miniMapCameraParameters = {
- *  view: String,
- *  multipleViewsViewport: Vector4,
- *  initialOrientation: Orientation,
- *  orientationMin: Orientation,
- *  orientationMax: Orientation,
- *  initialDistance: Float,
- *  distanceMin: Float,
- *  distanceMax: Float,
- *  initialZoom: Float,
- *  zoomMin: Float,
- *  zoomMax: Float,
- *  initialFov: Float,
- *  near: Float,
- *  far: Float
- * }
- */
+import AnimationsDoor from "./animationDoor.js";
+
+let descricao;
 
 export default class ThumbRaiser {
-    constructor(generalParameters, mazeParameters, playerParameters, lightsParameters, fogParameters, fixedViewCameraParameters, firstPersonViewCameraParameters, thirdPersonViewCameraParameters, topViewCameraParameters, miniMapCameraParameters, elevatorParameters, doorParameters) {
-        this.generalParameters = merge({}, generalData, generalParameters);
-        this.mazeParameters = merge({}, mazeData, mazeParameters);
-        this.playerParameters = merge({}, playerData, playerParameters);
-        this.lightsParameters = merge({}, lightsData, lightsParameters);
-        this.fogParameters = merge({}, fogData, fogParameters);
-        this.fixedViewCameraParameters = merge({}, cameraData, fixedViewCameraParameters);
-        this.firstPersonViewCameraParameters = merge({}, cameraData, firstPersonViewCameraParameters);
-        this.thirdPersonViewCameraParameters = merge({}, cameraData, thirdPersonViewCameraParameters);
-        this.topViewCameraParameters = merge({}, cameraData, topViewCameraParameters);
-        this.miniMapCameraParameters = merge({}, cameraData, miniMapCameraParameters);
-        this.elevatorParameters = merge({}, elevatorData, elevatorParameters);
-        this.doorParameters = merge({},doorData, doorParameters);
 
-        // Create a 2D scene (the viewports frames)
-        this.scene2D = new THREE.Scene();
 
-        // Create a square
-        let points = [new THREE.Vector3(0.0, 0.0, 0.0), new THREE.Vector3(1.0, 0.0, 0.0), new THREE.Vector3(1.0, 1.0, 0.0), new THREE.Vector3(0.0, 1.0, 0.0)];
-        let geometry = new THREE.BufferGeometry().setFromPoints(points);
-        const material = new THREE.LineBasicMaterial({ color: 0xffffff });
-        this.square = new THREE.LineLoop(geometry, material);
-        this.scene2D.add(this.square);
+    constructor(parameters, generalParameters, mazeParameters, playerParameters, portaParameters, lightsParameters, fogParameters, fixedViewCameraParameters, firstPersonViewCameraParameters, thirdPersonViewCameraParameters, topViewCameraParameters, miniMapCameraParameters, elevatorParameters) {
+        this.onLoad = function (description) {
 
-        // Create the camera corresponding to the 2D scene
-        this.camera2D = new THREE.OrthographicCamera(0.0, 1.0, 1.0, 0.0, 0.0, 1.0);
+            // Store the maze's map and size
+            this.map = description.map;
+            this.size = description.size;
+            ////////
 
-        // Create a 3D scene (the game itself)
-        this.scene3D = new THREE.Scene();
+            this.generalParameters = merge({}, generalData, generalParameters);
+            this.mazeParameters = merge({}, mazeData, mazeParameters);
+            this.playerParameters = merge({}, playerData, playerParameters);
+            this.portaParameters = merge({}, portaData, portaParameters);
+            this.lightsParameters = merge({}, lightsData, lightsParameters);
+            this.fogParameters = merge({}, fogData, fogParameters);
+            this.fixedViewCameraParameters = merge({}, cameraData, fixedViewCameraParameters);
+            this.firstPersonViewCameraParameters = merge({}, cameraData, firstPersonViewCameraParameters);
+            this.thirdPersonViewCameraParameters = merge({}, cameraData, thirdPersonViewCameraParameters);
+            this.topViewCameraParameters = merge({}, cameraData, topViewCameraParameters);
+            this.miniMapCameraParameters = merge({}, cameraData, miniMapCameraParameters);
+            this.elevatorParameters = merge({}, elevatorData, elevatorParameters);
 
-        // Create the maze
-        this.maze = new Maze(this.mazeParameters);
+            // Create a 2D scene (the viewports frames)
+            this.scene2D = new THREE.Scene();
 
-        // Create the player
-        this.player = new Player(this.playerParameters);
+            // Create a square
+            let points = [new THREE.Vector3(0.0, 0.0, 0.0), new THREE.Vector3(1.0, 0.0, 0.0), new THREE.Vector3(1.0, 1.0, 0.0), new THREE.Vector3(0.0, 1.0, 0.0)];
+            let geometry = new THREE.BufferGeometry().setFromPoints(points);
+            const material = new THREE.LineBasicMaterial({ color: 0xffffff });
+            this.square = new THREE.LineLoop(geometry, material);
+            this.scene2D.add(this.square);
 
-        // Create the elevator
-        this.elevator = new Elevator(this.elevatorParameters);
+            // Create the camera corresponding to the 2D scene
+            this.camera2D = new THREE.OrthographicCamera(0.0, 1.0, 1.0, 0.0, 0.0, 1.0);
 
-        // Create the door
-        
-      // this.door = new Door(this.doorParameters);
-    // Criar várias portas
-   // const numPortas = 2; //numero de portas criadas harcoded
-        this.doors = [];
-    // Criar múltiplas instâncias de portas
+            // Create a 3D scene (the game itself)
+            this.scene3D = new THREE.Scene();
 
-    for (let i = 0; i < 4; i++) {
-        const door = new Door(this.doorParameters);
-        this.doors.push(door);
-    }
 
-        // Create the lights
-        this.lights = new Lights(this.lightsParameters);
+            this.portas = [];
+            let porta;
 
-        // Create the fog
-        this.fog = new Fog(this.fogParameters);
+            this.maze = new Maze(this.mazeParameters);
 
-        // Create the cameras corresponding to the four different views: fixed view, first-person view, third-person view and top view
-        this.fixedViewCamera = new Camera(this.fixedViewCameraParameters, window.innerWidth, window.innerHeight);
-        this.firstPersonViewCamera = new Camera(this.firstPersonViewCameraParameters, window.innerWidth, window.innerHeight);
-        this.thirdPersonViewCamera = new Camera(this.thirdPersonViewCameraParameters, window.innerWidth, window.innerHeight);
-        this.topViewCamera = new Camera(this.topViewCameraParameters, window.innerWidth, window.innerHeight);
+            // Create the porta after the maze is created
+            // Criar várias portas
+            const numPortas = description.mapa.salas.length;
 
-        // Create the mini-map camera
-        this.miniMapCamera = new Camera(this.miniMapCameraParameters, window.innerWidth, window.innerHeight);
+            // Criar múltiplas instâncias de portas
+            for (let i = 0; i < numPortas; i++) {
+                porta = new Porta(this.portaParameters);
+                this.portas.push(porta);
+            }
+            console.log('Num Portas thumbraiser', numPortas);
 
-        // Create the statistics and make its node invisible
-        this.statistics = new Stats();
-        this.statistics.dom.style.visibility = "hidden";
-        document.body.appendChild(this.statistics.dom);
+            this.portaPosicaoLista = [];
+            this.portaDirecaoLista = [];
+            let portaDirecao;
+            let portaPosicao;
 
-        // Create a renderer and turn on shadows in the renderer
-        this.renderer = new THREE.WebGLRenderer({ antialias: true });
-        if (this.generalParameters.setDevicePixelRatio) {
-            this.renderer.setPixelRatio(window.devicePixelRatio);
+            for (let i = 0; i < numPortas; i++) {
+                portaDirecao = description.mapa.salas[i].porta.direcao;
+                this.portaDirecaoLista.push(portaDirecao);
+
+                if (portaDirecao == 90) {
+                    portaPosicao = this.cellToCartesian([description.mapa.salas[i].porta.x1, description.mapa.salas[i].porta.y1 - 0.5]);
+                    this.portaPosicaoLista.push(portaPosicao);
+                }
+
+                else {
+                    portaPosicao = this.cellToCartesian([description.mapa.salas[i].porta.x1 - 0.5, description.mapa.salas[i].porta.y1]);
+                    this.portaPosicaoLista.push(portaPosicao);
+                }
+            }
+
+
+
+
+            // Create the player
+            this.player = new Player(this.playerParameters);
+
+            // Create the elevator
+            this.elevator = new Elevator(this.elevatorParameters);
+
+            // Create the lights
+            this.lights = new Lights(this.lightsParameters);
+
+            // Create the fog
+            this.fog = new Fog(this.fogParameters);
+
+            // Create the cameras corresponding to the four different views: fixed view, first-person view, third-person view and top view
+            this.fixedViewCamera = new Camera(this.fixedViewCameraParameters, window.innerWidth, window.innerHeight);
+            this.firstPersonViewCamera = new Camera(this.firstPersonViewCameraParameters, window.innerWidth, window.innerHeight);
+            this.thirdPersonViewCamera = new Camera(this.thirdPersonViewCameraParameters, window.innerWidth, window.innerHeight);
+            this.topViewCamera = new Camera(this.topViewCameraParameters, window.innerWidth, window.innerHeight);
+
+            // Create the mini-map camera
+            this.miniMapCamera = new Camera(this.miniMapCameraParameters, window.innerWidth, window.innerHeight);
+
+            // Create the statistics and make its node invisible
+            this.statistics = new Stats();
+            this.statistics.dom.style.visibility = "hidden";
+            document.body.appendChild(this.statistics.dom);
+
+            // Create a renderer and turn on shadows in the renderer
+            this.renderer = new THREE.WebGLRenderer({ antialias: true });
+            if (this.generalParameters.setDevicePixelRatio) {
+                this.renderer.setPixelRatio(window.devicePixelRatio);
+            }
+            this.renderer.autoClear = false;
+            this.renderer.shadowMap.enabled = true;
+            this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            this.renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(this.renderer.domElement);
+
+            // Set the mouse move action (none)
+            this.dragMiniMap = false;
+            this.changeCameraDistance = false;
+            this.changeCameraOrientation = false;
+
+            // Set the game state
+            this.gameRunning = false;
+
+            // Get and configure the panel's <div> elements
+            this.viewsPanel = document.getElementById("views-panel");
+            this.edificio = document.getElementById("edificio");
+            this.piso = document.getElementById("piso");
+            this.view = document.getElementById("view");
+            this.projection = document.getElementById("projection");
+            this.horizontal = document.getElementById("horizontal");
+            this.horizontal.step = 1;
+            this.vertical = document.getElementById("vertical");
+            this.vertical.step = 1;
+            this.distance = document.getElementById("distance");
+            this.distance.step = 0.1;
+            this.zoom = document.getElementById("zoom");
+            this.zoom.step = 0.1;
+            this.reset = document.getElementById("reset");
+            this.resetAll = document.getElementById("reset-all");
+            this.helpPanel = document.getElementById("help-panel");
+            this.helpPanel.style.visibility = "hidden";
+            this.subwindowsPanel = document.getElementById("subwindows-panel");
+            this.multipleViewsCheckBox = document.getElementById("multiple-views");
+            this.multipleViewsCheckBox.checked = false;
+            this.userInterfaceCheckBox = document.getElementById("user-interface");
+            this.userInterfaceCheckBox.checked = true;
+            this.miniMapCheckBox = document.getElementById("mini-map");
+            this.miniMapCheckBox.checked = true;
+            this.helpCheckBox = document.getElementById("help");
+            this.helpCheckBox.checked = false;
+            this.statisticsCheckBox = document.getElementById("statistics");
+            this.statisticsCheckBox.checked = false;
+
+            // Build the help panel
+            this.buildHelpPanel();
+
+            // Set the active view camera (fixed view)
+            this.setActiveViewCamera(this.fixedViewCamera);
+
+            // Arrange viewports by view mode
+            this.arrangeViewports(this.multipleViewsCheckBox.checked);
+
+            // Register the event handler to be called on window resize
+            window.addEventListener("resize", event => this.windowResize(event));
+
+            // Register the event handler to be called on key down
+            document.addEventListener("keydown", event => this.keyChange(event, true));
+
+            // Register the event handler to be called on key release
+            document.addEventListener("keyup", event => this.keyChange(event, false));
+
+            // Register the event handler to be called on mouse down
+            this.renderer.domElement.addEventListener("mousedown", event => this.mouseDown(event));
+
+            // Register the event handler to be called on mouse move
+            this.renderer.domElement.addEventListener("mousemove", event => this.mouseMove(event));
+
+            // Register the event handler to be called on mouse up
+            this.renderer.domElement.addEventListener("mouseup", event => this.mouseUp(event));
+
+            // Register the event handler to be called on mouse wheel
+            this.renderer.domElement.addEventListener("wheel", event => this.mouseWheel(event));
+
+            // Register the event handler to be called on context menu
+            this.renderer.domElement.addEventListener("contextmenu", event => this.contextMenu(event));
+
+            // Register the event handler to be called on select, input number, or input checkbox change
+            this.edificio.addEventListener("change", event => this.elementChange(event));
+            this.piso.addEventListener("change", event => this.elementChange(event));
+            this.view.addEventListener("change", event => this.elementChange(event));
+            this.projection.addEventListener("change", event => this.elementChange(event));
+            this.horizontal.addEventListener("change", event => this.elementChange(event));
+            this.vertical.addEventListener("change", event => this.elementChange(event));
+            this.distance.addEventListener("change", event => this.elementChange(event));
+            this.zoom.addEventListener("change", event => this.elementChange(event));
+            this.multipleViewsCheckBox.addEventListener("change", event => this.elementChange(event));
+            this.userInterfaceCheckBox.addEventListener("change", event => this.elementChange(event));
+            this.helpCheckBox.addEventListener("change", event => this.elementChange(event));
+            this.statisticsCheckBox.addEventListener("change", event => this.elementChange(event));
+
+            // Register the event handler to be called on input button click
+            this.reset.addEventListener("click", event => this.buttonClick(event));
+            this.resetAll.addEventListener("click", event => this.buttonClick(event));
+
+            this.activeElement = document.activeElement;
+
         }
-        this.renderer.autoClear = false;
-        this.renderer.shadowMap.enabled = true;
-        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(this.renderer.domElement);
 
-        // Set the mouse move action (none)
-        this.dragMiniMap = false;
-        this.changeCameraDistance = false;
-        this.changeCameraOrientation = false;
+        this.onProgress = function (url, xhr) {
+            console.log("Resource '" + url + "' " + (100.0 * xhr.loaded / xhr.total).toFixed(0) + "% loaded.");
+        }
 
-        // Set the game state
-        this.gameRunning = false;
+        this.onError = function (url, error) {
+            console.error("Error loading resource " + url + " (" + error + ").");
+        }
 
-        // Get and configure the panel's <div> elements
-        this.viewsPanel = document.getElementById("views-panel");
-        this.view = document.getElementById("view");
-        this.projection = document.getElementById("projection");
-        this.horizontal = document.getElementById("horizontal");
-        this.horizontal.step = 1;
-        this.vertical = document.getElementById("vertical");
-        this.vertical.step = 1;
-        this.distance = document.getElementById("distance");
-        this.distance.step = 0.1;
-        this.zoom = document.getElementById("zoom");
-        this.zoom.step = 0.1;
-        this.reset = document.getElementById("reset");
-        this.resetAll = document.getElementById("reset-all");
-        this.helpPanel = document.getElementById("help-panel");
-        this.helpPanel.style.visibility = "hidden";
-        this.subwindowsPanel = document.getElementById("subwindows-panel");
-        this.multipleViewsCheckBox = document.getElementById("multiple-views");
-        this.multipleViewsCheckBox.checked = false;
-        this.userInterfaceCheckBox = document.getElementById("user-interface");
-        this.userInterfaceCheckBox.checked = true;
-        this.miniMapCheckBox = document.getElementById("mini-map");
-        this.miniMapCheckBox.checked = true;
-        this.helpCheckBox = document.getElementById("help");
-        this.helpCheckBox.checked = false;
-        this.statisticsCheckBox = document.getElementById("statistics");
-        this.statisticsCheckBox.checked = false;
+        for (const [key, value] of Object.entries(parameters)) {
+            this[key] = value;
+        }
+        this.loaded = false;
 
-        // Build the help panel
-        this.buildHelpPanel();
+        // The cache must be enabled; additional information available at https://threejs.org/docs/api/en/loaders/FileLoader.html
+        THREE.Cache.enabled = true;
 
-        // Set the active view camera (fixed view)
-        this.setActiveViewCamera(this.fixedViewCamera);
+        // Create a resource file loader
+        const loader = new THREE.FileLoader();
 
-        // Arrange viewports by view mode
-        this.arrangeViewports(this.multipleViewsCheckBox.checked);
+        // Set the response type: the resource file will be parsed with JSON.parse()
+        loader.setResponseType("json");
 
-        // Register the event handler to be called on window resize
-        window.addEventListener("resize", event => this.windowResize(event));
+        // Load a maze description resource file
+        loader.load(
+            //Resource URL
+            this.url,
 
-        // Register the event handler to be called on key down
-        document.addEventListener("keydown", event => this.keyChange(event, true));
+            // onLoad callback
+            description => this.onLoad(description),
 
-        // Register the event handler to be called on key release
-        document.addEventListener("keyup", event => this.keyChange(event, false));
+            // onProgress callback
+            xhr => this.onProgress(this.url, xhr),
 
-        // Register the event handler to be called on mouse down
-        this.renderer.domElement.addEventListener("mousedown", event => this.mouseDown(event));
+            // onError callback
+            error => this.onError(this.url, error)
+        );
 
-        // Register the event handler to be called on mouse move
-        this.renderer.domElement.addEventListener("mousemove", event => this.mouseMove(event));
-
-        // Register the event handler to be called on mouse up
-        this.renderer.domElement.addEventListener("mouseup", event => this.mouseUp(event));
-
-        // Register the event handler to be called on mouse wheel
-        this.renderer.domElement.addEventListener("wheel", event => this.mouseWheel(event));
-
-        // Register the event handler to be called on context menu
-        this.renderer.domElement.addEventListener("contextmenu", event => this.contextMenu(event));
-
-        // Register the event handler to be called on select, input number, or input checkbox change
-        this.view.addEventListener("change", event => this.elementChange(event));
-        this.projection.addEventListener("change", event => this.elementChange(event));
-        this.horizontal.addEventListener("change", event => this.elementChange(event));
-        this.vertical.addEventListener("change", event => this.elementChange(event));
-        this.distance.addEventListener("change", event => this.elementChange(event));
-        this.zoom.addEventListener("change", event => this.elementChange(event));
-        this.multipleViewsCheckBox.addEventListener("change", event => this.elementChange(event));
-        this.userInterfaceCheckBox.addEventListener("change", event => this.elementChange(event));
-        this.helpCheckBox.addEventListener("change", event => this.elementChange(event));
-        this.statisticsCheckBox.addEventListener("change", event => this.elementChange(event));
-
-        // Register the event handler to be called on input button click
-        this.reset.addEventListener("click", event => this.buttonClick(event));
-        this.resetAll.addEventListener("click", event => this.buttonClick(event));
-
-        this.activeElement = document.activeElement;
     }
+
 
     buildHelpPanel() {
         const table = document.getElementById("help-table");
@@ -336,6 +281,8 @@ export default class ThumbRaiser {
     }
 
     displayPanel() {
+        this.edificio.options.selectedIndex = ["Edificio A", "Edificio B", "Edificio C", "Edificio D"].indexOf(this.edificio.value);
+        this.piso.options.selectedIndex = ["Piso 1", "Piso 2", "Piso 3", "Piso 4"].indexOf(this.piso.value);
         this.view.options.selectedIndex = ["fixed", "first-person", "third-person", "top"].indexOf(this.activeViewCamera.view);
         this.projection.options.selectedIndex = ["perspective", "orthographic"].indexOf(this.activeViewCamera.projection);
         this.horizontal.value = this.activeViewCamera.orientation.h.toFixed(0);
@@ -356,6 +303,22 @@ export default class ThumbRaiser {
         this.zoom.min = this.activeViewCamera.zoomMin.toFixed(1);
         this.zoom.max = this.activeViewCamera.zoomMax.toFixed(1);
         this.displayPanel();
+    }
+
+    // Convert cell [row, column] coordinates to cartesian (x, y, z) coordinates
+    cellToCartesian(position) {
+        return new THREE.Vector3((position[1] - this.size.width / 2.0 + 0.5) * this.scale.x, 0.0, (position[0] - this.size.height / 2.0 + 0.5) * this.scale.z);
+    }
+
+    // Set active edificio
+    setActiveEdificio(edificio) {
+        this.edificio = edificio;
+
+    }
+
+    // Set active piso
+    setActivePiso(piso) {
+        this.piso = piso;
     }
 
     arrangeViewports(multipleViews) {
@@ -445,6 +408,20 @@ export default class ThumbRaiser {
             if (event.code == "Space" || event.code == "ArrowLeft" || event.code == "ArrowRight" || event.code == "ArrowDown" || event.code == "ArrowUp") {
                 event.preventDefault();
             }
+            if (event.code == this.player.keyCodes.edificioA && state) { //Select edificio A
+                this.setActiveEdificio(this.edificioA);
+            }
+            else if (event.code == this.player.keyCodes.edificioB && state) { //Select edificio B
+                this.setActiveEdificio(this.edificioB);
+            }
+            else if (event.code == this.player.keyCodes.edificioC && state) { //Select edificio C
+                this.setActiveEdificio(this.edificioC);
+            }
+            else if (event.code == this.player.keyCodes.edificioD && state) { //Select edificio D
+                this.setActiveEdificio(this.edificioD);
+            }
+
+
             if (event.code == this.player.keyCodes.fixedView && state) { // Select fixed view
                 this.setActiveViewCamera(this.fixedViewCamera);
             }
@@ -490,24 +467,6 @@ export default class ThumbRaiser {
             if (event.code == this.elevator.keyCodes.open) {
                 this.elevator.keyStates.open = state;
             }
-            // if (event.code == this.player.keyCodes.jump) {
-            //     this.player.keyStates.jump = state;
-            // }
-            // else if (event.code == this.player.keyCodes.yes) {
-            //     this.player.keyStates.yes = state;
-            // }
-            // else if (event.code == this.player.keyCodes.no) {
-            //     this.player.keyStates.no = state;
-            // }
-            // else if (event.code == this.player.keyCodes.wave) {
-            //     this.player.keyStates.wave = state;
-            // }
-            // else if (event.code == this.player.keyCodes.punch) {
-            //     this.player.keyStates.punch = state;
-            // }
-            // else if (event.code == this.player.keyCodes.thumbsUp) {
-            //     this.player.keyStates.thumbsUp = state;
-            // }
         }
     }
 
@@ -598,6 +557,12 @@ export default class ThumbRaiser {
 
     elementChange(event) {
         switch (event.target.id) {
+            case "edificio":
+                this.setActiveEdificio([this.edificioA, this.edificioB, this.edificioC, this.edificioD][this.edificio.options.selectedIndex]);
+                break;
+            case "piso":
+                this.setActivePiso([this.piso1, this.piso2, this.piso3, this.piso4][this.piso.options.selectedIndex]);
+                break;
             case "view":
                 this.setActiveViewCamera([this.fixedViewCamera, this.firstPersonViewCamera, this.thirdPersonViewCamera, this.topViewCamera][this.view.options.selectedIndex]);
                 break;
@@ -666,7 +631,7 @@ export default class ThumbRaiser {
         // Set single-view mode
         this.setViewMode(false);
         // Set the final action
-       // this.animations.fadeToAction("Dance", 0.2);
+        // this.animations.fadeToAction("Dance", 0.2);
     }
 
     collision(position) {
@@ -674,22 +639,20 @@ export default class ThumbRaiser {
     }
 
     collisionWithElevator(position) {
-        return this.maze.distanceToElevator(position) < this.player.radius ;
+        return this.maze.distanceToElevator(position) < this.player.radius;
     }
+
 
     update() {
         if (!this.gameRunning) {
-            if (this.maze.loaded && this.player.loaded && this.elevator.loaded &&  this.doors[0].loaded && this.doors[1].loaded) { // If all resources have been loaded
-                // Add the maze, the player, the lights, the elevator and the doors to the scene
+            const allPortasLoaded = this.portas.every((porta) => porta.loaded);
+            if (this.maze.loaded && this.player.loaded && allPortasLoaded && this.elevator.loaded) { // If all resources have been loaded
+                // Add the maze, the player and the lights to the scene
+
                 this.scene3D.add(this.maze.object);
                 this.scene3D.add(this.player.object);
                 this.scene3D.add(this.lights.object);
                 this.scene3D.add(this.elevator.object);
-            
-              //  this.scene3D.add(this.door.object);
-              this.doors.forEach((door) => {
-                this.scene3D.add(door.object);
-            });
 
                 // Create the clock
                 this.clock = new THREE.Clock();
@@ -697,27 +660,49 @@ export default class ThumbRaiser {
                 // Create model animations (states, emotes and expressions)
                 this.animations = new Animations(this.player.object, this.player.animations);
                 this.animationsElevator = new AnimationsElevator(this.elevator.object, this.elevator.animations);
+
                 // Set the player's position and direction
                 this.player.position = this.maze.initialPosition.clone();
                 this.player.direction = this.maze.initialDirection;
-                
+
                 // Set the elevators's position and direction
                 this.elevator.position = this.maze.elevatorPosition.clone();
                 this.elevator.direction = this.maze.elevatorDirection;
 
-                // Set the door's position and direction
-                // this.door.position = this.maze.doorPosition.clone();
-                 //this.door.direction = this.maze.doorDirection;
+
+                for (let i = 0; i < this.portas.length; i++) {
+                    this.portas[i].position = this.portaPosicaoLista[i].clone();
+                    this.portas[i].direction = THREE.MathUtils.degToRad(this.portaDirecaoLista[i]);
                
-              
+   
+                }
+
+                this.portas.forEach((porta) => {
+                    porta.object.position.set(porta.position.x, 0, porta.position.z);
+                    
+                }
+                );
+
+
+
+                this.portas.forEach((porta) => {
+                    this.scene3D.add(porta.object);
+                });
+
+                this.portas.forEach((porta) => {
+                    porta.object.rotation.y = porta.direction;
+                });
+
+
                 // Create the user interface
-                this.userInterface = new UserInterface(this.scene3D, this.renderer, this.lights, this.fog, this.player.object, this.animations, this.elevator.object);
+                this.userInterface = new UserInterface(this.scene3D, this.renderer, this.lights, this.fog, this.player.object, this.animations);
 
                 // Start the game
                 this.gameRunning = true;
             }
         }
         else {
+            this.elevator.object.position.set(this.elevator.position.x, this.elevator.position.y, this.elevator.position.z);
             // Update the model animations
             const deltaT = this.clock.getDelta();
             this.animations.update(deltaT);
@@ -729,19 +714,12 @@ export default class ThumbRaiser {
                     this.finalSequence();
                 }
                 else {
-                    // set elevator position
-                    this.elevator.object.position.set(this.elevator.position.x, this.elevator.position.y, this.elevator.position.z);
-                   // set door position
-                  // this.door.object.position.set(this.door.position.x, this.door.position.y, this.door.position.z);
-
-
                     let coveredDistance = this.player.walkingSpeed * deltaT;
                     let directionIncrement = this.player.turningSpeed * deltaT;
                     if (this.player.keyStates.run) {
                         coveredDistance *= this.player.runningFactor;
                         directionIncrement *= this.player.runningFactor;
                     }
-                    
                     if (this.player.keyStates.left) {
                         this.player.direction += directionIncrement;
                     }
@@ -750,47 +728,42 @@ export default class ThumbRaiser {
                     }
                     const direction = THREE.MathUtils.degToRad(this.player.direction);
 
-
                     if (this.player.keyStates.backward) {
                         const newPosition = new THREE.Vector3(-coveredDistance * Math.sin(direction), 0.0, -coveredDistance * Math.cos(direction)).add(this.player.position);
-                        
                         if (this.collision(newPosition)) {
-                            this.animations.fadeToAction("Death", 0.2);
+                            // this.animations.fadeToAction("Death", 0.2);
                         }
                         else {
-                          // this.animations.fadeToAction(this.player.keyStates.run ? "Running" : "Walking", 0.2);
+                            // this.animations.fadeToAction(this.player.keyStates.run ? "Running" : "Walking", 0.2);
                             this.player.position = newPosition;
                         }
-
-                       
                     }
                     else if (this.player.keyStates.forward) {
                         const newPosition = new THREE.Vector3(coveredDistance * Math.sin(direction), 0.0, coveredDistance * Math.cos(direction)).add(this.player.position);
-                        
                         if (this.collision(newPosition)) {
-                            this.animations.fadeToAction("Death", 0.2);
-                            
+                            // this.animations.fadeToAction("Death", 0.2);
                         }
                         else {
+                            // this.animations.fadeToAction(this.player.keyStates.run ? "Running" : "Walking", 0.2);
                             this.player.position = newPosition;
                         }
                         if (this.collisionWithElevator(newPosition)) {
                             this.animationsElevator.fadeToAction("02_open", 0.2);
                         }
                     }
-                   
+
                     else {
-                        
                         this.animations.fadeToAction("Armature|ArmatureAction", this.animations.activeName != "Death" ? 0.2 : 0.6);
                     }
                     this.player.object.position.set(this.player.position.x, this.player.position.y, this.player.position.z);
                     this.player.object.rotation.y = direction - this.player.initialDirection;
-                    
-                    this.doors.forEach((door, index) => {
-                        door.object.position.set(index + 0.5, 0, index + 0.5);
-                    });
+
+
+                    const directionElevator = THREE.MathUtils.degToRad(this.maze.elevatorDirection);
+                    this.elevator.object.rotation.y = directionElevator;
+
+
                 }
-              
             }
 
             // Update first-person, third-person and top view cameras parameters (player direction and target)
@@ -835,8 +808,11 @@ export default class ThumbRaiser {
                 this.scene3D.fog = null;
                 this.player.object.visible = true;
                 this.elevator.object.visible = true;
-               
-               
+                this.portas.forEach((porta) => {
+                    porta.object.visible = true;
+                });
+
+
                 const viewport = this.miniMapCamera.getViewport();
                 this.renderer.setViewport(viewport.x, viewport.y, viewport.width, viewport.height);
                 this.renderer.render(this.scene3D, this.miniMapCamera.object);

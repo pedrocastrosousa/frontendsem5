@@ -116,6 +116,26 @@
             <table class="views">
                 <tr>
                     <td>
+                        <label>Edificio:</label>
+                        <select id="edificio">
+                            <option value="Edificio A">Edificio A</option>
+                            <option value="Edificio B">Edificio B</option>
+                            <option value="Edificio C">Edificio C</option>
+                            <option value="Edificio D">Edificio D</option>
+                        </select>
+                    </td>
+                    <td>
+                        <label>Piso:</label>
+                        <select id="piso">
+                            <option value="Piso 1">Piso 1</option>
+                            <option value="Piso 2">Piso 2</option>
+                            <option value="Piso 3">Piso 3</option>
+                            <option value="Piso 4">Piso 4</option>
+                        </select>
+                    </td>
+                    </tr>
+                    <tr>
+                    <td>
                         <label>View:</label>
                         <select id="view">
                             <option value="fixed">Fixed</option>
@@ -124,6 +144,7 @@
                             <option value="top">Top</option>
                         </select>
                     </td>
+
                     <td>
                         <label>Orientation (h):</label>
                         <input type="number" id="horizontal" required>
@@ -238,28 +259,27 @@
                 </tr>
                 <tr>
                     <td></td>
-                    <td></td>
-                    <td></td>
+                    <td>Jump</td>
                 </tr>
                 <tr>
                     <td></td>
-                    <td></td>
+                    <td>Yes</td>
                 </tr>
                 <tr>
                     <td></td>
-                    <td></td>
+                    <td>No</td>
                 </tr>
                 <tr>
                     <td></td>
-                    <td></td>
+                    <td>Wave</td>
                 </tr>
                 <tr>
                     <td></td>
-                    <td></td>
+                    <td>Punch</td>
                 </tr>
                 <tr>
                     <td></td>
-                    <td></td>
+                    <td>Thumbs up</td>
                 </tr>
                 <tr>
                     <td colspan="2" style="text-align: right"></td>
@@ -315,15 +335,22 @@
         import * as THREE from "three";
         import Orientation from "./orientation.js";
         import ThumbRaiser from "./thumb_raiser.js";
+        import {mazeData} from "./default_data.js";
+        import { merge } from "./merge.js";
+        import Stats from "three/addons/libs/stats.module.js";
 
         let thumbRaiser;
 
+
         function initialize() {
             // Create the game
+            let parameters = merge({},mazeData);
             thumbRaiser = new ThumbRaiser(
+                parameters, // Game parameters
                 {}, // General Parameters
                 { scale: new THREE.Vector3(1.0, 0.5, 1.0) }, // Maze parameters
-                {}, // Player parameters
+                {}, // Player parameters,
+                {}, // Porta parameters,
                 { ambientLight: { intensity: 0.1 }, pointLight1: { intensity: 50.0, distance: 20.0, position: new THREE.Vector3(-3.5, 10.0, 2.5) }, pointLight2: { intensity: 50.0, distance: 20.0, position: new THREE.Vector3(3.5, 10.0, -2.5) } }, // Lights parameters
                 {}, // Fog parameters
                 { view: "fixed", multipleViewsViewport: new THREE.Vector4(0.0, 1.0, 0.45, 0.5) }, // Fixed view camera parameters
@@ -333,13 +360,11 @@
                 { view: "mini-map", multipleViewsViewport: new THREE.Vector4(0.99, 0.02, 0.3, 0.3), initialOrientation: new Orientation(180.0, -90.0), initialZoom: 0.64 } // Mini-msp view camera parameters
             );
         }
-
         function animate() {
             requestAnimationFrame(animate);
             // Update the game
             thumbRaiser.update();
         }
-
         initialize();
         animate();
     </script>
