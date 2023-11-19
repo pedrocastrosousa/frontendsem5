@@ -19,7 +19,7 @@ export const playerData = {
     initialDirection: 0.0, // Expressed in degrees
     turningSpeed: 75.0, // Expressed in degrees / second
     runningFactor: 2.0, // Affects walking speed and turning speed
-    keyCodes: { fixedView: "Digit1", firstPersonView: "Digit2", thirdPersonView: "Digit3", topView: "Digit4", viewMode: "KeyV", userInterface: "KeyU", miniMap: "KeyM", help: "KeyH", statistics: "KeyS", run: "KeyR", left: "ArrowLeft", right: "ArrowRight", backward: "ArrowDown", forward: "ArrowUp", jump: "KeyJ", yes: "KeyY", no: "KeyN", wave: "KeyW", punch: "KeyP", thumbsUp: "KeyT" }
+    keyCodes: { fixedView: "Digit1", firstPersonView: "Digit2", thirdPersonView: "Digit3", topView: "Digit4", viewMode: "KeyV", userInterface: "KeyU", miniMap: "KeyM", help: "KeyH", statistics: "KeyS", run: "KeyR", left: "ArrowLeft", right: "ArrowRight", backward: "ArrowDown", forward: "ArrowUp", jump: "KeyJ", yes: "KeyY", no: "KeyN", wave: "KeyW", thumbsUp: "KeyT" }
 }
 
 export const elevatorData = {
@@ -31,8 +31,9 @@ export const elevatorData = {
 
 export const portaData = {
     url: "./models/door/door_wood.glb",
-    scale: new THREE.Vector3(0.72, 0.667, 0.72),
-    portaDirection: 0.0, // Expressed in degrees
+   scale: new THREE.Vector3(0.72, 0.667, 0.72),
+       portaDirection: 0.0, // Expressed in degrees
+    keyCodes: { close: "KeyC"  }
 }
 
 

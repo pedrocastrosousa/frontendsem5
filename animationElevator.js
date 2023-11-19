@@ -12,21 +12,16 @@ export default class AnimationsElevator {
             const clip = animations[i];
             const action = this.mixer.clipAction(clip);
             this.actions[clip.name] = action;
-            if (this.states.indexOf(clip.name) >= 4 ) {
-                action.clampWhenFinished = true;
-                action.loop = THREE.LoopOnce;
-            }
+            
        }
         this.activeName =  "02_open";
-        this.actions[this.activeName].play();
+      //  this.actions[this.activeName].play();
     }
  
 
     fadeToAction(name, duration) {
        
-            const previousName = this.activeName;
             this.activeName = name;
-            this.actions[previousName].fadeOut(duration);
             this.actions[this.activeName]
                 .reset()
                 .setEffectiveTimeScale(1)

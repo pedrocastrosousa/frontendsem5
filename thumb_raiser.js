@@ -73,7 +73,7 @@ export default class ThumbRaiser {
                 porta = new Porta(this.portaParameters);
                 this.portas.push(porta);
             }
-            console.log('Num Portas thumbraiser', numPortas);
+           // console.log('Num Portas thumbraiser', numPortas);
 
             this.portaPosicaoLista = [];
             this.portaDirecaoLista = [];
@@ -467,6 +467,13 @@ export default class ThumbRaiser {
             if (event.code == this.elevator.keyCodes.open) {
                 this.elevator.keyStates.open = state;
             }
+
+            this.portas.forEach((porta) => {
+                if (event.code == porta.keyCodes.close) {
+                    porta.keyStates.close = state;
+                }
+             })
+
         }
     }
 
@@ -673,13 +680,11 @@ export default class ThumbRaiser {
                 for (let i = 0; i < this.portas.length; i++) {
                     this.portas[i].position = this.portaPosicaoLista[i].clone();
                     this.portas[i].direction = THREE.MathUtils.degToRad(this.portaDirecaoLista[i]);
-               
-   
+
                 }
 
                 this.portas.forEach((porta) => {
                     porta.object.position.set(porta.position.x, 0, porta.position.z);
-                    
                 }
                 );
 
@@ -687,10 +692,17 @@ export default class ThumbRaiser {
 
                 this.portas.forEach((porta) => {
                     this.scene3D.add(porta.object);
+
                 });
 
                 this.portas.forEach((porta) => {
                     porta.object.rotation.y = porta.direction;
+
+                });
+                this.portas.forEach((porta) => {
+
+                    this.animationsPorta = new AnimationsDoor(porta.object, porta.animations);
+
                 });
 
 
@@ -707,8 +719,9 @@ export default class ThumbRaiser {
             const deltaT = this.clock.getDelta();
             this.animations.update(deltaT);
             this.animationsElevator.update(deltaT);
+            this.animationsPorta.update(deltaT);
             // Update the player
-            if (!this.animations.actionInProgress && !this.animationsElevator.actionInProgress) {
+            if (!this.animations.actionInProgress && !this.animationsElevator.actionInProgress && !this.animationsPorta.actionInProgress) {
                 // Check if the player found the exit
                 if (this.maze.foundExit(this.player.position)) {
                     this.finalSequence();
@@ -728,28 +741,32 @@ export default class ThumbRaiser {
                     }
                     const direction = THREE.MathUtils.degToRad(this.player.direction);
 
+                    if (this.elevator.keyStates.open) {
+                        this.animationsElevator.fadeToAction("02_open", 0.2);
+                    }
+
+                    this.portas.forEach((porta) => {
+                        if (porta.keyStates.close) {
+                            this.animationsPorta.fadeToAction("close /open", 0.5);
+                        }   
+                    });
+
                     if (this.player.keyStates.backward) {
                         const newPosition = new THREE.Vector3(-coveredDistance * Math.sin(direction), 0.0, -coveredDistance * Math.cos(direction)).add(this.player.position);
                         if (this.collision(newPosition)) {
-                            // this.animations.fadeToAction("Death", 0.2);
                         }
                         else {
-                            // this.animations.fadeToAction(this.player.keyStates.run ? "Running" : "Walking", 0.2);
                             this.player.position = newPosition;
                         }
                     }
                     else if (this.player.keyStates.forward) {
                         const newPosition = new THREE.Vector3(coveredDistance * Math.sin(direction), 0.0, coveredDistance * Math.cos(direction)).add(this.player.position);
                         if (this.collision(newPosition)) {
-                            // this.animations.fadeToAction("Death", 0.2);
                         }
                         else {
-                            // this.animations.fadeToAction(this.player.keyStates.run ? "Running" : "Walking", 0.2);
                             this.player.position = newPosition;
                         }
-                        if (this.collisionWithElevator(newPosition)) {
-                            this.animationsElevator.fadeToAction("02_open", 0.2);
-                        }
+
                     }
 
                     else {

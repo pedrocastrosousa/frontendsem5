@@ -2,7 +2,7 @@ import * as THREE from "three";
 
 export default class AnimationsDoor {
     constructor(object, animations) {
-    this.states = [ "close/open"];
+    this.states = [ "close /open"];
     
         this.mixer = new THREE.AnimationMixer(object);
         this.actionInProgress = false;
@@ -17,7 +17,7 @@ export default class AnimationsDoor {
                 action.loop = THREE.LoopOnce;
             }
        }
-        this.activeName =  "close/open";
+        this.activeName =  "close /open";
         this.actions[this.activeName].play();
     }
  
