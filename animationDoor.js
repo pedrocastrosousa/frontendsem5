@@ -17,22 +17,22 @@ export default class AnimationsDoor {
                 action.loop = THREE.LoopOnce;
             }
        }
-        this.activeName =  "close /open";
-        this.actions[this.activeName].play();
+    //   this.activeName =  "close /open";
+     //   this.actions[this.activeName].play();
     }
  
 
     fadeToAction(name, duration) {
-       
-            const previousName = this.activeName;
             this.activeName = name;
-            this.actions[previousName].fadeOut(duration);
+            
             this.actions[this.activeName]
                 .reset()
                 .setEffectiveTimeScale(1)
                 .setEffectiveWeight(1)
                 .fadeIn(duration)
+                .fadeOut(8)
                 .play();
+                
     }
 
     // actionFinished() {

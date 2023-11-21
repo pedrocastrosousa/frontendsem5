@@ -14,7 +14,7 @@ export default class AnimationsElevator {
             this.actions[clip.name] = action;
             
        }
-        this.activeName =  "02_open";
+       // this.activeName =  "02_open";
       //  this.actions[this.activeName].play();
     }
  
@@ -27,6 +27,7 @@ export default class AnimationsElevator {
                 .setEffectiveTimeScale(1)
                 .setEffectiveWeight(1)
                 .fadeIn(duration)
+                .fadeOut(10)
                 .play();
     }
 

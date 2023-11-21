@@ -668,6 +668,11 @@ export default class ThumbRaiser {
                 this.animations = new Animations(this.player.object, this.player.animations);
                 this.animationsElevator = new AnimationsElevator(this.elevator.object, this.elevator.animations);
 
+                for (let i = 0; i < this.portas.length; i++) {
+                
+                    this.portas[i].animationsPorta = new AnimationsDoor(this.portas[i].object, this.portas[i].animations);
+
+                }
                 // Set the player's position and direction
                 this.player.position = this.maze.initialPosition.clone();
                 this.player.direction = this.maze.initialDirection;
@@ -699,15 +704,11 @@ export default class ThumbRaiser {
                     porta.object.rotation.y = porta.direction;
 
                 });
-                this.portas.forEach((porta) => {
-
-                    this.animationsPorta = new AnimationsDoor(porta.object, porta.animations);
-
-                });
+               
 
 
                 // Create the user interface
-                this.userInterface = new UserInterface(this.scene3D, this.renderer, this.lights, this.fog, this.player.object, this.animations);
+                this.userInterface = new UserInterface(this.scene3D, this.renderer, this.lights, this.fog, this.player.object, this.animations , this.elevator.object, this.animationsElevator, this.portas, this.animationsPorta);
 
                 // Start the game
                 this.gameRunning = true;
@@ -719,9 +720,11 @@ export default class ThumbRaiser {
             const deltaT = this.clock.getDelta();
             this.animations.update(deltaT);
             this.animationsElevator.update(deltaT);
-            this.animationsPorta.update(deltaT);
+            for (let i = 0; i < this.portas.length; i++) {
+                this.portas[i].animationsPorta.update(deltaT);
+            }
             // Update the player
-            if (!this.animations.actionInProgress && !this.animationsElevator.actionInProgress && !this.animationsPorta.actionInProgress) {
+            if (!this.animations.actionInProgress && !this.animationsElevator.actionInProgress && !this.portas.some((porta) => porta.animationsPorta.actionInProgress)) {
                 // Check if the player found the exit
                 if (this.maze.foundExit(this.player.position)) {
                     this.finalSequence();
@@ -742,14 +745,15 @@ export default class ThumbRaiser {
                     const direction = THREE.MathUtils.degToRad(this.player.direction);
 
                     if (this.elevator.keyStates.open) {
-                        this.animationsElevator.fadeToAction("02_open", 0.2);
+                        this.animationsElevator.fadeToAction("02_open", 0.5);
                     }
 
-                    this.portas.forEach((porta) => {
-                        if (porta.keyStates.close) {
-                            this.animationsPorta.fadeToAction("close /open", 0.5);
-                        }   
-                    });
+                    for (let i = 0; i < this.portas.length; i++) {
+                        if (this.portas[i].keyStates.close) {
+                            this.portas[i].animationsPorta.fadeToAction("close /open", 0.2);
+                        }
+                    }
+                   
 
                     if (this.player.keyStates.backward) {
                         const newPosition = new THREE.Vector3(-coveredDistance * Math.sin(direction), 0.0, -coveredDistance * Math.cos(direction)).add(this.player.position);
