@@ -175,4 +175,14 @@ export default class Maze {
         }
         return Infinity;
     }
+
+    distanceToPorta(position, portasPosition) {
+        const indices = this.cartesianToCell(position);
+        const portasIndices = this.cartesianToCell(portasPosition);
+        if (indices[0] == portasIndices[0] && indices[1] == portasIndices[1]) {
+            return position.x -2 - this.cellToCartesian(indices).x + this.scale.x / 2.0;
+        }
+        return Infinity;
+    }
+
 }

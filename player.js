@@ -32,7 +32,7 @@ export default class Player {
             box.getSize(size);
 
             // Adjust the object's oversized dimensions (hard-coded; see previous comments)
-            size.x = 3.5;
+            size.x = 4.0;
             size.y = 4.4;
             size.z = 2.6;
 

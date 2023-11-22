@@ -21,7 +21,7 @@ export default class Porta {
             box.getSize(size);
 
             // Adjust the object's oversized dimensions (hard-coded; see previous comments)
-            size.x = 3.0;
+            size.x = 6.0;
             size.y = 4.1;
             size.z = 2.6;
 

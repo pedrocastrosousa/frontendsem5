@@ -657,8 +657,8 @@ export default class ThumbRaiser {
         return this.maze.distanceToWestWall(position) < this.player.radius || this.maze.distanceToEastWall(position) < this.player.radius || this.maze.distanceToNorthWall(position) < this.player.radius || this.maze.distanceToSouthWall(position) < this.player.radius;
     }
 
-    collisionWithElevator(position) {
-        return this.maze.distanceToElevator(position) < this.player.radius;
+    collisionWithPorta(position, portaPosition) {
+        return this.maze.distanceToPorta(position, portaPosition) < this.player.radius;
     }
 
 
@@ -760,8 +760,17 @@ export default class ThumbRaiser {
                         this.animationsElevator.fadeToAction("02_open", 0.5);
                     }
 
+                    // for (let i = 0; i < this.portas.length; i++) {
+                        
+                    //     if (this.portas[i].keyStates.close) {
+                    //         this.portas[i].animationsPorta.fadeToAction("close /open", 1.5);
+                    //     }
+                    // }
+
                     for (let i = 0; i < this.portas.length; i++) {
-                        if (this.portas[i].keyStates.close) {
+                        const newPosition = new THREE.Vector3(-coveredDistance * Math.sin(direction), 0.0, -coveredDistance * Math.cos(direction)).add(this.player.position);
+
+                        if (this.collisionWithPorta(newPosition, this.portaPosicaoLista[i])) {
                             this.portas[i].animationsPorta.fadeToAction("close /open", 1.5);
                         }
                     }
@@ -777,6 +786,12 @@ export default class ThumbRaiser {
                     }
                     else if (this.player.keyStates.forward) {
                         const newPosition = new THREE.Vector3(coveredDistance * Math.sin(direction), 0.0, coveredDistance * Math.cos(direction)).add(this.player.position);
+                        for (let i = 0; i < this.portas.length; i++) {
+    
+                            if (this.collisionWithPorta(newPosition, this.portaPosicaoLista[i])) {
+                                this.portas[i].animationsPorta.fadeToAction("close /open", 1.5);
+                            }
+                        }
                         if (this.collision(newPosition)) {
                         }
                         else {
