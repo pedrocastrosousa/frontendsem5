@@ -30,7 +30,7 @@ export default class AnimationsDoor {
                 .setEffectiveTimeScale(1)
                 .setEffectiveWeight(1)
                 .fadeIn(duration)
-                .fadeOut(8)
+                .fadeOut(4.5)
                 .play();
                 
     }

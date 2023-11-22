@@ -277,7 +277,19 @@ export default class ThumbRaiser {
             };
             table.rows[i++].cells[0].innerHTML = this.player.keyCodes[key];
         }
-        table.rows[i].cells[0].innerHTML = this.maze.credits + "<br>" + this.player.credits;
+        for (const key in this.elevator.keyCodes) {
+            while (table.rows[i].cells.length < 2) {
+                i++;
+            }
+            table.rows[i++].cells[0].innerHTML = this.elevator.keyCodes[key];
+        }
+        //   for (const key in this.porta.keyCodes) {
+        //     while (table.rows[i].cells.length < 2) {
+        //         i++;
+        //     }
+        //     table.rows[i++].cells[0].innerHTML = this.porta.keyCodes[key];
+        // }  
+        table.rows[i+1].cells[0].innerHTML = this.maze.credits + "<br>" + this.player.credits + "<br>" + this.elevator.credits ;
     }
 
     displayPanel() {
@@ -750,7 +762,7 @@ export default class ThumbRaiser {
 
                     for (let i = 0; i < this.portas.length; i++) {
                         if (this.portas[i].keyStates.close) {
-                            this.portas[i].animationsPorta.fadeToAction("close /open", 0.2);
+                            this.portas[i].animationsPorta.fadeToAction("close /open", 1.5);
                         }
                     }
                    

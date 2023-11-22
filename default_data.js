@@ -13,17 +13,19 @@ export const mazeData = {
 
 export const playerData = {
     url: "./models/gltf/RobotExpressive/toy_story_robot.glb",
+    credits: "Robot Expressive by Google",
     eyeHeight: 0.8, // fraction of character height
     scale: new THREE.Vector3(0.2, 0.2, 0.2),
     walkingSpeed: 0.75,
     initialDirection: 0.0, // Expressed in degrees
     turningSpeed: 75.0, // Expressed in degrees / second
     runningFactor: 2.0, // Affects walking speed and turning speed
-    keyCodes: { fixedView: "Digit1", firstPersonView: "Digit2", thirdPersonView: "Digit3", topView: "Digit4", viewMode: "KeyV", userInterface: "KeyU", miniMap: "KeyM", help: "KeyH", statistics: "KeyS", run: "KeyR", left: "ArrowLeft", right: "ArrowRight", backward: "ArrowDown", forward: "ArrowUp", jump: "KeyJ", yes: "KeyY", no: "KeyN", wave: "KeyW", thumbsUp: "KeyT" }
+    keyCodes: { fixedView: "Digit1", firstPersonView: "Digit2", thirdPersonView: "Digit3", topView: "Digit4", viewMode: "KeyV", userInterface: "KeyU", miniMap: "KeyM", help: "KeyH", statistics: "KeyS", run: "KeyR", left: "ArrowLeft", right: "ArrowRight", backward: "ArrowDown", forward: "ArrowUp" }
 }
 
 export const elevatorData = {
     url: "./models/Elevator/elevator_animated.glb",
+    credits: "Elevator by JeffK",
     scale: new THREE.Vector3(0.25, 0.5, 0.50),
     initialDirection: 0.0, // Expressed in degrees
     keyCodes: { open: "KeyE" }
@@ -31,9 +33,10 @@ export const elevatorData = {
 
 export const portaData = {
     url: "./models/door/door_wood.glb",
-   scale: new THREE.Vector3(0.72, 0.667, 0.72),
-       portaDirection: 0.0, // Expressed in degrees
-    keyCodes: { close: "KeyC"  }
+    credits: "Door by DiggenDigga",
+    scale: new THREE.Vector3(0.72, 0.667, 0.72),
+    portaDirection: 0.0, // Expressed in degrees
+    keyCodes: { close: "KeyP"  }
 }
 
 
