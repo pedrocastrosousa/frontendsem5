@@ -22,13 +22,6 @@ export default class Maze {
             this.initialPosition = this.cellToCartesian(description.initialPosition);
             this.initialDirection = description.initialDirection;
 
-            this.numPortas = description.mapa.salas.length;
-            console.log('Num de portas',this.numPortas);
-
-
-            this.portaPosition = this.cellToCartesian(description.portaPosition);
-            this.portaDirection = description.portaDirection;
-
             // Store the maze's exit location
             this.exitLocation = this.cellToCartesian(description.exitLocation);
 
@@ -42,10 +35,10 @@ export default class Maze {
             // Create a wall
             this.wall = new Wall({ textureUrl: description.wallTextureUrl });
 
-             // Store the elevator's initial position and direction
-             this.elevatorPosition = this.cellToCartesian(description.mapa.elevadores.posicao); 
-             this.elevatorDirection = description.mapa.elevadores.direcao;
- 
+            // Store the elevator's initial position and direction
+            this.elevatorPosition = this.cellToCartesian(description.mapa.elevadores.posicao);
+            this.elevatorDirection = description.mapa.elevadores.direcao;
+
             // Build the maze
             let wallObject;
             for (let i = 0; i <= description.size.width; i++) { // In order to represent the eastmost walls, the map width is one column greater than the actual maze width
@@ -60,13 +53,13 @@ export default class Maze {
                      */
                     if (description.map[j][i] == 2 || description.map[j][i] == 3) {
                         wallObject = this.wall.object.clone();
-                        wallObject.scale.set(1.0,4.0,1.0);
+                        wallObject.scale.set(1.0, 4.0, 1.0);
                         wallObject.position.set(i - description.size.width / 2.0 + 0.5, 2, j - description.size.height / 2.0);
                         this.object.add(wallObject);
                     }
                     if (description.map[j][i] == 1 || description.map[j][i] == 3) {
                         wallObject = this.wall.object.clone();
-                        wallObject.scale.set(1.0,4.0,1.0);
+                        wallObject.scale.set(1.0, 4.0, 1.0);
                         wallObject.rotateY(Math.PI / 2.0);
                         wallObject.position.set(i - description.size.width / 2.0, 2, j - description.size.height / 2.0 + 0.5);
                         this.object.add(wallObject);
@@ -76,6 +69,7 @@ export default class Maze {
 
             this.object.scale.set(this.scale.x, this.scale.y, this.scale.z);
             this.loaded = true;
+
         }
 
         this.onProgress = function (url, xhr) {
@@ -116,7 +110,7 @@ export default class Maze {
         );
     }
 
-    // Convert cell [row, column] coordinates to cartesian (x, y, z) coordinates
+   // Convert cell [row, column] coordinates to cartesian (x, y, z) coordinates
     cellToCartesian(position) {
         return new THREE.Vector3((position[1] - this.size.width / 2.0 + 0.5) * this.scale.x, 0.0, (position[0] - this.size.height / 2.0 + 0.5) * this.scale.z);
     }
@@ -170,7 +164,7 @@ export default class Maze {
 
     distanceToElevator(position) {
         const indices = this.cartesianToCell(position);
-        if (this.map[indices[0]][indices[1]] == 8 || this.map[indices[0]][indices[1]] == 9 || this.map[indices[0]][indices[1]] == 10|| this.map[indices[0]][indices[1]] == 11) {
+        if (this.map[indices[0]][indices[1]] == 8 || this.map[indices[0]][indices[1]] == 9 || this.map[indices[0]][indices[1]] == 10 || this.map[indices[0]][indices[1]] == 11) {
             return position.x - this.cellToCartesian(indices).x + this.scale.x / 2.0;
         }
         return Infinity;
@@ -184,5 +178,4 @@ export default class Maze {
         }
         return Infinity;
     }
-
 }

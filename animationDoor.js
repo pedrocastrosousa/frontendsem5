@@ -17,14 +17,12 @@ export default class AnimationsDoor {
                 action.loop = THREE.LoopOnce;
             }
        }
-    //   this.activeName =  "close /open";
-     //   this.actions[this.activeName].play();
+        
     }
  
 
     fadeToAction(name, duration) {
             this.activeName = name;
-            
             this.actions[this.activeName]
                 .reset()
                 .setEffectiveTimeScale(1)
@@ -32,15 +30,7 @@ export default class AnimationsDoor {
                 .fadeIn(duration)
                 .fadeOut(4.5)
                 .play();
-                
     }
-
-    // actionFinished() {
-    //     if (this.actionInProgress) {
-    //         this.actionInProgress = false;
-    //         this.mixer.removeEventListener("finished", this.actionInProgress);
-    //     }
-    // }
 
     update(deltaT) {
         if (this.mixer) {

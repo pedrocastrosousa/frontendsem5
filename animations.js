@@ -42,13 +42,6 @@ export default class Animations {
         }
     }
 
-    // actionFinished() {
-    //     if (this.actionInProgress) {
-    //         this.actionInProgress = false;
-    //         this.mixer.removeEventListener("finished", this.actionInProgress);
-    //     }
-    // }
-
     update(deltaT) {
         if (this.mixer) {
             this.mixer.update(deltaT);

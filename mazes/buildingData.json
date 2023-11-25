@@ -1,0 +1,23 @@
+[
+    {
+      "name": "EdificioA",
+      "id": 1,
+      "floors": ["Piso1", "Piso2", "Piso3"]
+    },
+    {
+      "name": "EdificioB",
+      "id": 2,
+      "floors": ["Piso1", "Piso2", "Piso3"]
+    },
+    {
+      "name": "EdificioC",
+      "id": 3,
+      "floors": ["Piso1", "Piso2", "Piso3"]
+    },
+    {
+      "name": "EdificioD",
+      "id": 4,
+      "floors": ["Piso1", "Piso2", "Piso3"]
+    }
+  ]
+  

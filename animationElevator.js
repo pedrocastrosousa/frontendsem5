@@ -14,8 +14,7 @@ export default class AnimationsElevator {
             this.actions[clip.name] = action;
             
        }
-       // this.activeName =  "02_open";
-      //  this.actions[this.activeName].play();
+    
     }
  
 
@@ -31,12 +30,7 @@ export default class AnimationsElevator {
                 .play();
     }
 
-    // actionFinished() {
-    //     if (this.actionInProgress) {
-    //         this.actionInProgress = false;
-    //         this.mixer.removeEventListener("finished", this.actionInProgress);
-    //     }
-    // }
+  
 
     update(deltaT) {
         if (this.mixer) {

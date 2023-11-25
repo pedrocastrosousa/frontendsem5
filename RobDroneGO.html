@@ -118,23 +118,15 @@
                     <td>
                         <label>Edificio:</label>
                         <select id="edificio">
-                            <option value="Edificio A">Edificio A</option>
-                            <option value="Edificio B">Edificio B</option>
-                            <option value="Edificio C">Edificio C</option>
-                            <option value="Edificio D">Edificio D</option>
                         </select>
                     </td>
                     <td>
                         <label>Piso:</label>
                         <select id="piso">
-                            <option value="Piso 1">Piso 1</option>
-                            <option value="Piso 2">Piso 2</option>
-                            <option value="Piso 3">Piso 3</option>
-                            <option value="Piso 4">Piso 4</option>
                         </select>
                     </td>
-                    </tr>
-                    <tr>
+                </tr>
+                <tr>
                     <td>
                         <label>View:</label>
                         <select id="view">
@@ -255,15 +247,31 @@
                     <td>Walk / run forward</td>
                 </tr>
                 <tr>
-                    <th colspan="2" style="text-align: left">Emote objects</th>
+                    <th colspan="2" style="text-align: left">Emote character</th>
                 </tr>
                 <tr>
                     <td></td>
-                    <td>Open Elevator</td>
+                    <td>Jump</td>
                 </tr>
                 <tr>
-                    <td>KeyP</td>
-                    <td>Open Door</td>
+                    <td></td>
+                    <td>Yes</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>No</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>Wave</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>Punch</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>Thumbs up</td>
                 </tr>
                 <tr>
                     <td colspan="2" style="text-align: right"></td>
@@ -318,18 +326,20 @@
     <script type="module">
         import * as THREE from "three";
         import Orientation from "./orientation.js";
-        import ThumbRaiser from "./thumb_raiser.js";
-        import {mazeData} from "./default_data.js";
+        import RobDroneGO from "./robDroneGO.js";
+        import { mazeData } from "./default_data.js";
+      //  import { mazeData2 } from "./default_data.js";
+
         import { merge } from "./merge.js";
         import Stats from "three/addons/libs/stats.module.js";
 
-        let thumbRaiser;
+        let robDroneGO;
 
 
         function initialize() {
             // Create the game
-            let parameters = merge({},mazeData);
-            thumbRaiser = new ThumbRaiser(
+            let parameters = merge({}, mazeData);
+            robDroneGO = new RobDroneGO(
                 parameters, // Game parameters
                 {}, // General Parameters
                 { scale: new THREE.Vector3(1.0, 0.5, 1.0) }, // Maze parameters
@@ -347,10 +357,69 @@
         function animate() {
             requestAnimationFrame(animate);
             // Update the game
-            thumbRaiser.update();
+            robDroneGO.update();
         }
-        initialize();
-        animate();
+        // function changeBuilding() {
+        //     // Get the selected building value
+        //     var selectedBuilding = document.getElementById("edificio").value;
+        //     console.log(selectedBuilding);
+        //     let parameters;
+        //     parameters = merge({}, mazeData2);
+        //     robDroneGO.changeMaze(parameters,{ scale: new THREE.Vector3(1.0, 0.5, 1.0) },{});
+        // }
+
+async function changeBuilding() {
+    let parameters = merge({}, mazeData);
+    var selectedBuilding = document.getElementById("edificio").value;
+    var selectedFloor = document.getElementById("piso").value;
+
+    const jsonPath = `./mazes/${selectedBuilding.toLowerCase()}${selectedFloor.replace(" ", "")}Data.json`;
+
+    console.log("Caminho do ficheiro JSON:", jsonPath);
+
+    try {
+        const response = await fetch(jsonPath);
+        const buildingData = await response.json();
+        
+        mazeData.url = jsonPath;
+        //this.mazeData.url = jsonPath;
+        // Atualizar as configurações do jogo com os dados do edifício e piso selecionados
+        robDroneGO.changeMaze(mazeData, { scale: new THREE.Vector3(1.0, 0.5, 1.0) }, {});
+    } catch (error) {
+        console.error("Erro ao carregar o ficheiro JSON:", error);
+    }
+}
+
+
+// Initialize the game
+window.onload = async function () {
+    const response = await fetch('./mazes/buildingData.json');
+    const buildingData = await response.json();
+
+    // Populate the "Edificio" dropdown dynamically
+    const edificioDropdown = document.getElementById('edificio');
+    buildingData.forEach(building => {
+        const option = document.createElement('option');
+        option.value = building.name; // Assuming each building object has a 'name' property
+        option.textContent = building.name;
+        edificioDropdown.appendChild(option);
+    });
+
+    // Assuming your "Piso" dropdown has an id of 'piso'
+    const pisoDropdown = document.getElementById('piso');
+    buildingData[0].floors.forEach(floor => {
+        const option = document.createElement('option');
+        option.value = floor;
+        option.textContent = floor;
+        pisoDropdown.appendChild(option);
+    });
+
+    document.getElementById("edificio").addEventListener("change", changeBuilding);
+    document.getElementById("piso").addEventListener("change", changeBuilding);
+
+    initialize();
+    animate();
+};
     </script>
 </body>
 
